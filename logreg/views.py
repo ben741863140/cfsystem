@@ -1,60 +1,74 @@
 # _*_ coding: utf-8 _*_
 from django.shortcuts import render
 from django import forms
-from logreg.models import User
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 from django.http.response import HttpResponseRedirect, HttpResponse
-from django.http import response, request
+
 
 # Create your views here.
 class UserForm(forms.Form):
-    username = forms.CharField(label='用户名',max_length=30)
-    password = forms.CharField(label='密码',widget=forms.PasswordInput())
+    username = forms.CharField(label='用户名', max_length=30)
+    password = forms.CharField(label='密码', widget=forms.PasswordInput(), max_length=18)
 
-def regist(req):
-    Method = req.method
-    if Method=='POST':
+
+class UserRigisteForm(UserForm):
+    confirm_password = forms.CharField(label='确认密码', widget=forms.PasswordInput(), min_length=6,
+                                                  max_length=18)
+
+
+def register(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/index/')
+    Method = request.method
+    if Method == 'POST':
         # 如果有post动作，就把post的数据赋值给uf，提供给函数使用
-        uf = UserForm(req.POST)
-        if uf.is_valid():
-            username = uf.cleaned_data['username']
-            password = uf.cleaned_data['password']
+        urf = UserRigisteForm(request.POST)
+        if urf.is_valid():
+            username = urf.cleaned_data['username']
+            password = urf.cleaned_data['password']
+            is_confirm = urf.cleaned_data['confirm_password'] = password
+            queryset = User.objects.filter(username=username)
 
-            try:
-                registJudge = User.objects.filter(username=username).get()
-                return render(req,'regist.html',{'registJudge':registJudge})
-            except:
-                registAdd = User.objects.create(username=username, password=password)
-            # registAdd = User.objects.get_or_create(username=username,password=password)[1]
-            # if registAdd == False:
-                return render(req,'regist.html',{'registAdd':registAdd,'username':username})
+            if len(queryset) == 0:
+                User.objects.create_user(username=username, password=password)
+                return render(request, 'register.html', {'username': username})
+            return render(request, 'register.html', {'registJudge': queryset.get()})
     else:
-        uf = UserForm()
-        return render(req,'regist.html',{'uf':uf,'Method':Method})
+        urf = UserRigisteForm()
+        return render(request, 'register.html', {'urf': urf, 'Method': Method})
 
-def login(req):
-    if req.method == 'POST':
-        uf = UserForm(req.POST)
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect('/index/')
+    input_name =''
+    if request.method == 'POST':
+        uf = UserForm(request.POST)
         if uf.is_valid():
-            username = uf.cleaned_data['username']
+            input_name = uf.cleaned_data['username']
             password = uf.cleaned_data['password']
-            userPassJudge = User.objects.filter(username__exact=username,password__exact=password)
-
-            if userPassJudge:
-                response = HttpResponseRedirect('/index/')
-                response.set_cookie('cookie_username',username,3600)
-                return response
+            user = authenticate(username=input_name, password=password)
+            if user is not None and user.is_active:
+                login(request, user)
+                return HttpResponseRedirect('/index/')
             else:
-                return HttpResponse('login.html')
+                render(request, 'login.html', {'uf': uf})
     else:
         uf = UserForm()
-    return render(req,'login.html',{'uf':uf})
+    return render(request, 'login.html', {'uf': uf})
 
-def index(req):
-    username = req.COOKIES.get('cookie_username','')
-    return render(req,'index.html',{'username':username})
 
-def logout(req):
-    # 没弄懂这个
-    response = HttpResponse('logout!<br><a href="127.0.0.1:8000/regist>regist</a>"')
-    response.delete_cookie('cookie_username')
-    return response
+def index(request):
+    uf = UserForm()
+    for field in uf:
+        print(type(field))
+    request.session.set_expiry(0)  # 设置关闭浏览器后用session失效，就是登录的缓存
+    is_logged = request.user.is_authenticated
+    username = request.user.username if request.user.is_authenticated else ''
+    return render(request, 'index.html', {'username': username, 'is_logged': is_logged})
+
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect('/index')

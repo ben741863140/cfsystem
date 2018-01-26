@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+{% if Method == 'GET' %}
+    <form method="post">
+        {% csrf_token %}
+        {% for field in urf %}
+            {{ field.label_tag }}
+            {{ field }}
+            {% for error in field.errors %}
+                {{ error }}
+            {% endfor %}
+            <br/>
+        {% endfor %}
+        <input type="submit" name="register" value="register">
+    </form>
+{% else %}
+    {% if username %}
+        {{ username }} register is success!
+        <br>
+        <a href="/login">login</a>
+    {% else %}
+        {{ registJudge }} is exist!
+        <br>
+        <a href="/register">register</a>
+    {% endif %}
+{% endif %}
+</body>
+</html>
