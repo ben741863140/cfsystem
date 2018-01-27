@@ -52,6 +52,10 @@ def register(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('/index/')
     urf = UserRegisterForm()
+    if request.method == 'POST':
+        urf = UserRegisterForm(request.POST)
+        if urf.is_valid():
+            return render(request, 'register_success.html')
     return render(request, 'register.html', {'urf': urf})
 
 
@@ -72,7 +76,6 @@ def login_view(request):
 
 
 def index(request):
-    uf = UserForm()
     request.session.set_expiry(0)  # 设置关闭浏览器后用session失效，就是登录的缓存
     is_logged = request.user.is_authenticated
     username = request.user.username if request.user.is_authenticated else ''

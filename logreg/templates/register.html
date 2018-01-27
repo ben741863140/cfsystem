@@ -5,19 +5,17 @@
     <title>Register</title>
 </head>
 <body>
-{% if Method == 'GET' %}
-    <form method="post">
-        {% csrf_token %}
-        {% for field in urf %}
-            {{ field.label_tag }}
-            {{ field }}
-            {% for error in field.errors %}
-                {{ error }}
-            {% endfor %}
-            <br/>
+<form method="post">
+    {% csrf_token %}
+    {% for field in urf %}
+        {{ field.label_tag }}
+        {{ field }}
+        {% for error in field.errors %}
+            {{ error }}
         {% endfor %}
-        <input type="submit" name="register" value="register">
-    </form>
-{% endif %}
+        <br/>
+    {% endfor %}
+    <input type="submit" name="register" value="register">
+</form>
 </body>
 </html>
