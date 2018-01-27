@@ -11,49 +11,61 @@ class UserForm(forms.Form):
     username = forms.CharField(label='用户名', max_length=30)
     password = forms.CharField(label='密码', widget=forms.PasswordInput(), max_length=18)
 
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        queryset = User.objects.filter(username=username)
+        if len(queryset) == 0:
+            raise forms.ValidationError("用户不存在")
+        return username
 
-class UserRigisteForm(UserForm):
+    def clean_password(self):
+        username = self.data['username']
+        password = self.cleaned_data['password']
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise forms.ValidationError("密码错误")
+        return password
+
+
+class UserRegisterForm(forms.Form):
+    username = forms.CharField(label='用户名', max_length=30)
+    password = forms.CharField(label='密码', widget=forms.PasswordInput(), max_length=18)
     confirm_password = forms.CharField(label='确认密码', widget=forms.PasswordInput(), min_length=6,
-                                                  max_length=18)
+                                       max_length=18)
+
+    def clean_username(self):
+        username = self.data['username']
+        queryset = User.objects.filter(username=username)
+        if len(queryset):
+            raise forms.ValidationError('该用户已存在')
+        return username
+
+    def clean_confirm_password(self):
+        password = self.data['password']
+        confirm_password = self.data['confirm_password']
+        if password != confirm_password:
+            raise forms.ValidationError('两次密码输入不一致')
+        return confirm_password
 
 
 def register(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('/index/')
-    Method = request.method
-    if Method == 'POST':
-        # 如果有post动作，就把post的数据赋值给uf，提供给函数使用
-        urf = UserRigisteForm(request.POST)
-        if urf.is_valid():
-            username = urf.cleaned_data['username']
-            password = urf.cleaned_data['password']
-            is_confirm = urf.cleaned_data['confirm_password'] = password
-            queryset = User.objects.filter(username=username)
-
-            if len(queryset) == 0:
-                User.objects.create_user(username=username, password=password)
-                return render(request, 'register.html', {'username': username})
-            return render(request, 'register.html', {'registJudge': queryset.get()})
-    else:
-        urf = UserRigisteForm()
-        return render(request, 'register.html', {'urf': urf, 'Method': Method})
+    urf = UserRegisterForm()
+    return render(request, 'register.html', {'urf': urf})
 
 
 def login_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('/index/')
-    input_name =''
     if request.method == 'POST':
         uf = UserForm(request.POST)
         if uf.is_valid():
             input_name = uf.cleaned_data['username']
             password = uf.cleaned_data['password']
             user = authenticate(username=input_name, password=password)
-            if user is not None and user.is_active:
-                login(request, user)
-                return HttpResponseRedirect('/index/')
-            else:
-                render(request, 'login.html', {'uf': uf})
+            login(request, user)
+            return HttpResponseRedirect('/index/')
     else:
         uf = UserForm()
     return render(request, 'login.html', {'uf': uf})
@@ -61,8 +73,6 @@ def login_view(request):
 
 def index(request):
     uf = UserForm()
-    for field in uf:
-        print(type(field))
     request.session.set_expiry(0)  # 设置关闭浏览器后用session失效，就是登录的缓存
     is_logged = request.user.is_authenticated
     username = request.user.username if request.user.is_authenticated else ''
