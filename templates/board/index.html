@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>排行榜</title>
+</head>
+<body marginheight="0px" marginwidth="0px">
+    <table width="100%" height="950px" style="background-color: darkgrey; ">
+        <tr>
+            <td colspan="1" width="100%" height="10%">menu</td>
+        </tr>
+        <tr>
+            <td width="100%" height="87%">
+                <div style="overflow-x: auto; overflow-y: auto; width: 100%; height: 87%;">
+                    <table width="100%" cellspacing="0">
+                        {% if is_ch1 %}
+                            <tr>
+                                <td colspan="4" width="100%" height="5%" align="center" style="color: black; font-size: xx-large">分数排行榜</td>
+                            </tr>
+                            <tr>
+                                <td width="25%" height="3%" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">名次</td>
+                                <td width="25%" height="3%" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">姓名</td>
+                                <td width="25%" height="3%" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">账号</td>
+                                <td width="25%" height="3%" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">分数</td>
+                            </tr>
+                            {% for i in rating %}
+                                <tr>
+                                    <td width="25%" height="5px" align="center" style="color: red; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.rank }}</td>
+                                    <td width="25%" height="5px" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.name }}</td>
+                                    <td width="25%" height="5px" align="center" style="color: beige; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.handle }}</td>
+                                    <td width="25%" height="5px" align="center" style="color: blue; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.rating }}</td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                            <td colspan="4" width="100%" height="1%" align="right">
+                                <form>
+                                    {% csrf_token %}
+                                    <select name=select>
+                                        <option value="ch1">分数排名</option>
+                                        <option value="ch14">近两周升级榜</option>
+                                        <option value="ch30">近一月升级榜</option>
+                                        <option value="ch90">近三月升级榜</option>
+                                        <option value="ch180">近半年升级榜</option>
+                                    </select>
+                                    <input type="submit">
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" width="100%" height="5%" align="center" style="color: black; font-size: xx-large">{{ Time }}升分排行榜</td>
+                            </tr>
+                            <tr>
+                                <td width="5%" height="3%" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">名次</td>
+                                <td width="20%" height="3%" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">姓名</td>
+                                <td width="25%" height="3%" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">账号</td>
+                                <td colspan="3" width="40%" height="3%" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">分数</td>
+                                <td width="10%" height="3%" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">升幅</td>
+                            </tr>
+                            {% for i in rating %}
+                                <tr>
+                                    <td width="5%" height="5px" align="center" style="color: red; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.rank }}</td>
+                                    <td width="20%" height="5px" align="center" style="color: black; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.name }}</td>
+                                    <td width="25%" height="5px" align="center" style="color: beige; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.handle }}</td>
+                                    <td width="15%" height="5px" align="center" style="color: blue; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.oldRating }}</td>
+                                    <td width="10%" height="5px" align="center" style="color: blueviolet; border-top: snow solid 1px; border-bottom: snow solid 1px;">-></td>
+                                    <td width="15%" height="5px" align="center" style=" color: red; border-right:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.newRating }}</td>
+                                    <td width="10%" height="5px" align="center" style="color: green; border-right:snow solid 1px; border-left:snow solid 1px; border-top: snow solid 1px; border-bottom: snow solid 1px;">{{ i.change }}</td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                            <td colspan="7" width="100%" height="1%" align="right">
+                                <form>
+                                    {% csrf_token %}
+                                    <select name=select>
+                                        <option value="ch1">分数排名</option>
+                                        <option value="ch14">近两周升级榜</option>
+                                        <option value="ch30">近一月升级榜</option>
+                                        <option value="ch90">近三月升级榜</option>
+                                        <option value="ch180">近半年升级榜</option>
+                                    </select>
+                                    <input type="submit">
+                                </form>
+                            </td>
+                        {% endif %}
+
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td width="100%" height="3%" align="center" style="color:snow">@{{ date }} Leon & Toshi</td>
+        </tr>
+    </table>
+</body>
+</html>

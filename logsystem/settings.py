@@ -54,7 +54,7 @@ ROOT_URLCONF = 'logsystem.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -76,10 +76,10 @@ WSGI_APPLICATION = 'logsystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 引擎
-        'NAME': 'logsystem',  # 数据库名字
-        'USER': 'leon',
-        'PASSWORD': 'b33267015',
-        'HOST': '119.29.227.117',
+        'NAME': 'test_my',  # 数据库名字
+        'USER': 'newuser',
+        'PASSWORD': '122594',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }

@@ -5,15 +5,18 @@ import datetime
 
 
 def get_rating(*handles):
-    url = 'http://codeforces.com/api/user.info?handles='
-    for handle in handles:
-        url += str(handle) + ';'
-    results = BeautifulSoup(requests.get(url).text, 'html.parser').text
-    results = eval(results)
     res = {}
-    if results['status'] != 'OK':
-        raise Exception(results['comment'])
-    for info in results['result']:
+    for handle in handles:
+        url = 'http://codeforces.com/api/user.info?handles=' + handle
+        results = BeautifulSoup(requests.get(url).text, 'html.parser').text
+        results = eval(results)
+        if results['status'] != 'OK':
+            print('handle', handle, '不存在')
+            CFUser.objects.filter(handle=handle).delete()
+            continue
+        info = results['result'][0]
+        if 'rating' not in info.keys():
+            info['rating'] = 0
         res[info['handle'].lower()] = info['rating']
     return res
 
