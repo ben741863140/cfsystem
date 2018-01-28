@@ -6,7 +6,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.http.response import HttpResponseRedirect, HttpResponse
 
 
-# Create your views here.
 class UserForm(forms.Form):
     username = forms.CharField(label='用户名', max_length=30)
     password = forms.CharField(label='密码', widget=forms.PasswordInput(), max_length=18)
@@ -78,10 +77,16 @@ def login_view(request):
 def index(request):
     request.session.set_expiry(0)  # 设置关闭浏览器后用session失效，就是登录的缓存
     is_logged = request.user.is_authenticated
-    username = request.user.username if request.user.is_authenticated else ''
+    username = ''
+    if request.user.is_authenticated:
+        username = request.user.username
     return render(request, 'index.html', {'username': username, 'is_logged': is_logged})
 
 
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect('/index')
+
+
+
+

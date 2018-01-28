@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from logreg.views import index, login_view, logout_view, register
 from django.conf.urls import url
+from board.views import test_page
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
