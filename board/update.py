@@ -1,15 +1,14 @@
 from board import utility
 from board.models import CFUser, RatingChange
-from django.http.response import HttpResponse
 
 
 def update_rating():
-    handles = []
     for user in CFUser.objects.all():
-        handles.append(user.handle)
-    res = utility.get_rating(*handles)
-    for user in CFUser.objects.all():
-        user.rating = res[user.handle]
+        res = utility.get_rating(user.handle)
+        if res['status'] != 'OK':
+            print('<update-rating> handle', user.handle, '不存在')
+            continue
+        user.rating = res['rating']
         user.save()
 
 
@@ -28,18 +27,15 @@ def update_rating_change():
             rating_change.newRating = res['newRating']
             rating_change.save()
 
-
-def load_cf_user():
-    handles = []
-    for handle in open('cf.txt', 'r').readlines():
-        handle = handle.strip().lower()
-        handles.append(handle)
-        if len(CFUser.objects.filter(handle=handle)) == 0:
-            CFUser.objects.create(handle=handle)
-
-    for user in CFUser.objects.all():
-        if user.handle not in handles:
-            print('delete cfuser', user.handle)
-            CFUser.objects.filter(handle=user.handle).delete()
-
-
+# def load_cf_user():
+#     handles = []
+#     for handle in open('cf.txt', 'r').readlines():
+#         handle = handle.strip().lower()
+#         handles.append(handle)
+#         if len(CFUser.objects.filter(handle=handle)) == 0:
+#             CFUser.objects.create(handle=handle)
+#
+#     for user in CFUser.objects.all():
+#         if user.handle not in handles:
+#             print('delete cfuser', user.handle)
+#             CFUser.objects.filter(handle=user.handle).delete()
