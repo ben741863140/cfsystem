@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from board.models import CFUser, RatingChange
 from board.utility import get_user_info
+from board.auto_update import auto_update
 import datetime
 
 
@@ -64,7 +65,6 @@ def handle_list(request):
                 res['text'] = line
                 errors.append(res)
         for res in results:
-            print(res)
             if len(CFUser.objects.filter(handle=res['handle'])) == 0:
                 CFUser.objects.create(handle=res['handle'], rating=res['rating'], realname=res['realname'])
             else:
@@ -75,3 +75,6 @@ def handle_list(request):
         return render(request, 'board/handle_result.html', {'results': results, 'errors': errors})
 
     return render(request, 'board/handlelist.html', {'date': datetime.datetime.now().year})
+
+
+auto_update()
