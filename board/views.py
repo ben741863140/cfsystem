@@ -39,5 +39,12 @@ def board_view(request):
             info.change = '+' + str(info.change)
         else:
             info.change = str(info.change)
+    import datetime
     return render(request, 'board/index.html',
-                  {'is_ch1': select == 'ch1', 'rating': infos, 'Time': time})
+                  {'is_ch1': select == 'ch1', 'rating': infos, 'Time': time, 'date': datetime.datetime.now().year})
+
+
+def handle_list(request):
+
+
+    return render(request, 'board/handlelist.html')
