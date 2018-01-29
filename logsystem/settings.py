@@ -76,10 +76,10 @@ WSGI_APPLICATION = 'logsystem.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 引擎
-        'NAME': 'test_my',  # 数据库名字
-        'USER': 'newuser',
-        'PASSWORD': '122594',
-        'HOST': 'localhost',
+        'NAME': 'logsystem',  # 数据库名字
+        'USER': 'leon',
+        'PASSWORD': 'b33267015',
+        'HOST': '119.29.227.117',
         'PORT': '3306',
     }
 }
