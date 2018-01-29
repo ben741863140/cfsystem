@@ -1,15 +1,14 @@
 from board import utility
 from board.models import CFUser, RatingChange
-from django.http.response import HttpResponse
 
 
 def update_rating():
-    handles = []
     for user in CFUser.objects.all():
-        handles.append(user.handle)
-    res = utility.get_rating(*handles)
-    for user in CFUser.objects.all():
-        user.rating = res[user.handle]
+        res = utility.get_rating(user.handle)
+        if res['status'] != 'OK':
+            print('handle', user.handle, '不存在')
+            continue
+        user.rating = res['rating']
         user.save()
 
 

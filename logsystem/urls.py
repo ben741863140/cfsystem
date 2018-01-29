@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from logreg.views import index, login_view, logout_view, register
 from django.conf.urls import url
-from board.views import board_view
+from board.views import board_view, handle_list
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -25,5 +25,5 @@ urlpatterns = [
     url(r'^$', index, name='index'),
     url(r'^logout/$', logout_view, name='logout'),
     url(r'^board/$', board_view, name='board'),
-
+    url(r'^board/handlelist$', handle_list, name='board'),
 ]

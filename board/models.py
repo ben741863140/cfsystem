@@ -7,6 +7,7 @@ class CFUser(models.Model):
     handle = models.CharField(max_length=30, unique=True)
     rating = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
+    realname = models.CharField(max_length=5, default='')
 
 
 class RatingChange(models.Model):

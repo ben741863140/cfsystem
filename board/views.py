@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from board.models import CFUser, RatingChange
-from board.update import update_rating, update_rating_change, load_cf_user
+from board.utility import get_user_info
+import datetime
 
 
 def board_view(request):
@@ -39,12 +40,38 @@ def board_view(request):
             info.change = '+' + str(info.change)
         else:
             info.change = str(info.change)
-    import datetime
     return render(request, 'board/index.html',
                   {'is_ch1': select == 'ch1', 'rating': infos, 'Time': time, 'date': datetime.datetime.now().year})
 
 
 def handle_list(request):
+    if 'handle_list' in request.GET.keys():
+        content = request.GET['handle_list']
+        results = []
+        errors = []
+        visit = []
+        for line in content.split('\n'):
+            line = line.strip()
+            res = get_user_info(line)
+            if res['status'] == 'OK':
+                if res['handle'] in visit:
+                    res['comment'] = 'handle: ' + res['handle'] + '与上面重复'
+                    errors.append(res)
+                else:
+                    results.append(res)
+                visit.append(res['handle'])
+            else:
+                res['text'] = line
+                errors.append(res)
+        for res in results:
+            print(res)
+            if len(CFUser.objects.filter(handle=res['handle'])) == 0:
+                CFUser.objects.create(handle=res['handle'], rating=res['rating'], realname=res['realname'])
+            else:
+                user = CFUser.objects.filter(handle=res['handle']).get()
+                user.rating = res['rating']
+                user.realname = res['realname']
+                user.save()
+        return render(request, 'board/handle_result.html', {'results': results, 'errors': errors})
 
-
-    return render(request, 'board/handlelist.html')
+    return render(request, 'board/handlelist.html', {'date': datetime.datetime.now().year})

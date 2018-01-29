@@ -1,23 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
-from board.models import CFUser, RatingChange
-import datetime
+import datetime, re
 
 
-def get_rating(*handles):
-    res = {}
-    for handle in handles:
-        url = 'http://codeforces.com/api/user.info?handles=' + handle
-        results = BeautifulSoup(requests.get(url).text, 'html.parser').text
-        results = eval(results)
-        if results['status'] != 'OK':
-            print('handle', handle, '不存在')
-            CFUser.objects.filter(handle=handle).delete()
-            continue
-        info = results['result'][0]
-        if 'rating' not in info.keys():
-            info['rating'] = 0
-        res[info['handle'].lower()] = info['rating']
+def get_rating(handle):
+    handle = str(handle)
+    url = 'http://codeforces.com/api/user.info?handles=' + handle
+    results = BeautifulSoup(requests.get(url).text, 'html.parser').text
+    results = eval(results)
+    if results['status'] != 'OK':
+        results['comment'] = 'handle: ' + handle + ' 不存在'
+        return results
+    info = results['result'][0]
+    if 'rating' not in info.keys():
+        info['rating'] = 0
+    res = {'status': 'OK', 'rating': info['rating']}
     return res
 
 
@@ -41,3 +38,14 @@ def get_rating_change(cf_user, *days_ago):
     return res
 
 
+def get_user_info(line):
+    handle = re.findall(re.compile(r'[0-9a-zA-Z_]{3,24}'), line)
+    realname = re.findall(re.compile(r'[\u4e00-\u9fa5]{2,3}'), line)
+    if len(handle) == 0 or len(handle) > 1 or len(realname) > 1:
+        return {'status': 'FAILED', 'comment': '无法识别'}
+    if len(realname) == 0:
+        realname.append('')
+    res = get_rating(handle[0])
+    res['realname'] = realname[0]
+    res['handle'] = handle[0].lower()
+    return res
