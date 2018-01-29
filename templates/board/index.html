@@ -35,6 +35,10 @@
                             <td colspan="4" width="100%" height="1%" align="right">
                                 <form>
                                     {% csrf_token %}
+                                    <!--管理员选择名单按钮-->
+                                    {% if admin %}
+                                        <input type="button" value="名单选择" name="ch_handle">
+                                    {% endif %}
                                     <select name=select>
                                         <option value="ch1">分数排名</option>
                                         <option value="ch14">近两周升级榜</option>
@@ -72,6 +76,9 @@
                             <td colspan="7" width="100%" height="1%" align="right">
                                 <form>
                                     {% csrf_token %}
+                                    {% if admin %}
+                                        <input type="button" value="名单选择" name="ch_handle">
+                                    {% endif %}
                                     <select name=select>
                                         <option value="ch1">分数排名</option>
                                         <option value="ch14">近两周升级榜</option>
@@ -94,3 +101,4 @@
     </table>
 </body>
 </html>
+

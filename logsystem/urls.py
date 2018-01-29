@@ -20,10 +20,10 @@ from board.views import board_view
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^login/$', login_view,name='login'),
+    url(r'^login/$', login_view, name='login'),
     url(r'^register/$', register, name='register'),
-    url(r'^index/$', index,name='index'),
-    url(r'^logout/$', logout_view,name='logout'),
-    url(r'^$', board_view, name='main'),
+    url(r'^$', index, name='index'),
+    url(r'^logout/$', logout_view, name='logout'),
+    url(r'^board/$', board_view, name='board'),
 
 ]
