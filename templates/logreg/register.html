@@ -27,8 +27,15 @@
                         {% if field.help_text %}
                             <p class="help text-small text-muted">{{ field.help_text|safe }}</p>
                         {% endif %}
+                        {% if field.html_name == 'handle' %}
+                            <button type="button" class="btn btn-primary" id="yz">验证</button>
+                            <p><span id="okay"></span></p>
+                            <p class="form">验证码:</p>
+                            <input type="text" class="form" id="yzm" name="yzm">
+                            <p class="help text-big text-danger">{{ hint }}</p>
+                        {% endif %}
                     {% endfor %}
-                    <button type="submit" class="btn btn-primary btn-block">注册</button>
+                    <button type="submit" id="reg" class="btn btn-primary btn-block" disabled/>注册</button>
                     <input type="hidden" name="next" value="{{ next }}"/>
                 </form>
                 <div class="flex-center top-gap text-small">
@@ -38,5 +45,42 @@
         </div>
     </div>
 </div>
+<script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+    var time = 0;
+    $(document).ready(function(){
+      $("#yz").click(function(){
+          {% for field in form %}
+              {% if field.html_name == 'handle'%}
+                var handle = $('#{{ field.auto_id }}').val();
+              {% endif %}
+          {% endfor %}
+          if (time == 0){
+              time = 6; //秒数
+              $.ajax({
+                type:"POST",
+                url:"/ajax/yz/",
+                data:{"hand":handle},
+                success: function(ret){
+                    $('#okay').html(ret.result)
+                    $('#reg').removeAttr('disabled')
+                }
+              })
+              //启动计时器，倒计时time秒后自动关闭计时器。
+            var index = setInterval(function(){
+            time--;
+            $('#yz').html('验证('+time+'秒)')
+            if (time == 0) {
+                $('#yz').html('重新获取')
+                clearInterval(index);
+            }
+            }, 1000);
+          }
+          else{
+              alert(time+'秒后才能重新发送验证码');
+          }
+      });
+    });
+</script>
 </body>
 </html>

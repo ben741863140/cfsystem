@@ -41,6 +41,7 @@ def send_message(handle, content):
     data = opener.open(url).read()
     data = ungzip(data)
     csrf_token = get_csrf(data.decode())
+    print(data)
 
     post_dict = {
         'csrf_token': csrf_token,
@@ -53,7 +54,7 @@ def send_message(handle, content):
     }
     post_data = urllib.parse.urlencode(post_dict).encode()
     opener.open(url, post_data)
-    url = 'http://codeforces.com/usertalk?other=' + handle
+    url = 'http://codeforces.com/usertalk?other=' + str(handle)
     data = opener.open(url).read()
     data = ungzip(data)
     csrf_token = get_csrf(data.decode())
@@ -65,5 +66,5 @@ def send_message(handle, content):
     }
     post_data = urllib.parse.urlencode(post_dict).encode()
     opener.open(url, post_data)
-
+    print(data)
 
