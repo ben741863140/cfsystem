@@ -122,3 +122,5 @@ STATIC_URL = '/static/'
 
 # Other settings
 AUTH_USER_MODEL = 'logreg.User'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'

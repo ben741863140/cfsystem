@@ -16,10 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import url, include
 from board.views import board_view, handle_list
+from logreg.views import index
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^board/$', board_view, name='board'),
     url(r'^board/handlelist$', handle_list, name='board'),
     url(r'^logreg/', include('logreg.urls')),
+    url(r'^logreg/', include('django.contrib.auth.urls')),
+    url(r'^$', index, name='index'),
 ]
