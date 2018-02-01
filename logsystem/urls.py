@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import url, include
 from board.views import board_view, handle_list
-from logreg.views import index, yz
+from logreg.views import index, yz, yzm
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^logreg/', include('django.contrib.auth.urls')),
     url(r'^$', index, name='index'),
     url(r'^ajax/yz/', yz, name='yz'),
+    url(r'^ajax/yzm/', yzm, name='yzm'),
 ]

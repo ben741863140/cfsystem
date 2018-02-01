@@ -32,6 +32,7 @@
                             <p><span id="okay"></span></p>
                             <p class="form">验证码:</p>
                             <input type="text" class="form" id="yzm" name="yzm">
+                            <span id="yztex"></span>
                             <p class="help text-big text-danger">{{ hint }}</p>
                         {% endif %}
                     {% endfor %}
@@ -49,12 +50,12 @@
 <script>
     var time = 0;
     $(document).ready(function(){
+      {% for field in form %}
+          {% if field.html_name == 'handle'%}
+              var handle = $('#{{ field.auto_id }}').val();
+          {% endif %}
+      {% endfor %}
       $("#yz").click(function(){
-          {% for field in form %}
-              {% if field.html_name == 'handle'%}
-                var handle = $('#{{ field.auto_id }}').val();
-              {% endif %}
-          {% endfor %}
           if (time == 0){
               time = 60; //秒数
               $.ajax({
@@ -79,6 +80,22 @@
           else{
               alert(time+'秒后才能重新发送验证码');
           }
+      });
+      $('#yzm').focus();
+      $('#yzm').keyup(function () {
+          var tex = $('#yzm').val();
+          var cap ="";
+          var flag = false;
+          $.get('/ajax/yzm/',function (ret) {
+              for (var i=0; i< ret.length; ++i)
+                  cap += ret[i];
+              if(cap == "") flag=false
+              else flag =true
+              if(cap == tex && flag)
+                {$('#yztex').html("<p class=\"text-primary\">验证码正确!</p>");}
+              else
+                {$('#yztex').html("<p class=\"text-danger\">验证码错误!</p>");}
+          });
       });
     });
 </script>
