@@ -65,3 +65,14 @@ def get_settings():
     settings['hour'] = hour
     settings['minute'] = minute
     return settings
+
+
+def set_settings(info):
+    open(r'auto_update.ini', 'w').close()
+    file = open(r'auto_update.ini', 'a')
+    if info['is_open']:
+        print('is_open: YES', file=file)
+    else:
+        print('is_open: NO', file=file)
+    print('time: %02d:%02d' % (int(info['hour']), int(info['minute'])), file=file)
+    file.close()
