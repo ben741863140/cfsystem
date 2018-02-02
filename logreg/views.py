@@ -6,6 +6,7 @@ from django.http import HttpResponse
 import json
 import random
 from board.send_message import send_message
+from logreg.models import User
 
 # Create your views here.
 cap = ""
@@ -44,7 +45,7 @@ def yz(request):
     if request.is_ajax():
         return_json = {'result': '已发送验证码到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，打开对话版块查看验证码(PS:当CF有比赛进行的时候，本系统不会发出验证码，届时请耐心等待比赛结束)'}
         hand = str(request.POST.get('hand'))
-        print(hand)
+        # print(hand)
         random.seed()
         cap = ""
         for temp in range(0,6):
@@ -58,6 +59,23 @@ def yz(request):
 def yzm(request):
     global cap
     return HttpResponse(cap)
+
+@csrf_exempt
+def usercheck(request):
+    tex = str(request.GET.get('tex'))
+    # print(tex)
+    t = 'true'
+    for U in User.objects.all():
+        if U.username == tex:
+            t = 'false'
+    if len(tex) > 10 or len(tex) == 0:
+        t = 'false'
+    for temp in range(0,len(tex)):
+        if tex[temp] != '@' and tex[temp] != '.' and tex[temp] != '+' and tex[temp] != '-' and tex[temp] != '_' and (tex[temp] > '9' or tex[temp] < '0') and (tex[temp] > 'Z' or tex[temp] < 'A') and (tex[temp] > 'z' or tex[temp] < 'a'):
+            t = 'false'
+    return HttpResponse(t)
+
+
 
 def index(request):
     return render(request,'index.html')

@@ -23,6 +23,12 @@
                     {% for field in form %}
                         {{ field.label_tag }}
                         {{ field }}
+                        {% if field.auto_id == 'id_username' %}
+                        <span id="usertex"></span>
+                        {% endif %}
+                        {% if field.auto_id == 'id_password2' %}
+                        <span id="pastex"></span>
+                        {% endif %}
                         {{ field.errors }}
                         {% if field.help_text %}
                             <p class="help text-small text-muted">{{ field.help_text|safe }}</p>
@@ -49,6 +55,18 @@
 <script>
     var time = 0;
     $(document).ready(function(){
+      $("#id_username").keyup(function () {
+          var tex = $('#id_username').val();
+          var ans = "";
+          $.get('/ajax/usercheck/',{'tex':tex},function (ret) {
+              for (var i=0; i< ret.length; ++i)
+                  ans += ret[i];
+              if (ans == 'true')
+                  {$('#usertex').html("<p class=\"text-primary\">用户名可用!</p>");}
+              else
+                  {$('#usertex').html("<p class=\"text-danger\">用户名不可用!</p>");}
+          });
+      });
       $("#yz").click(function(){
           {% for field in form %}
           {% if field.html_name == 'handle'%}
@@ -79,6 +97,26 @@
           else{
               alert(time+'秒后才能重新发送验证码');
           }
+      });
+      $('#id_password1').keyup(function () {
+          var tex = $('#id_password1').val();
+          var com = $('#id_password2').val();
+          if(tex == com)
+              {$('#pastex').html("<p class=\"text-primary\">密码输入一致!</p>");}
+          else
+              {$('#pastex').html("<p class=\"text-danger\">密码输入不一致!</p>");}
+          if (com == "")
+              {$('#pastex').html("");}
+      });
+      $('#id_password2').keyup(function () {
+          var tex = $('#id_password1').val();
+          var com = $('#id_password2').val();
+          if(tex == com)
+              {$('#pastex').html("<p class=\"text-primary\">密码输入一致!</p>");}
+          else
+              {$('#pastex').html("<p class=\"text-danger\">密码输入不一致!</p>");}
+          if (com == "")
+              {$('#pastex').html("");}
       });
       $('#yzm').focus();
       $('#yzm').keyup(function () {
