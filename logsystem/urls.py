@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from board.views import board_view, handle_list
-from logreg.views import index, yz
+from logreg.views import index, yz, yzm
 
 urlpatterns = [
     # url(r'^admin/', include('admin.urls')),
@@ -27,3 +27,4 @@ urlpatterns = [
     url(r'^admin/', include('admin.urls')),
     url(r'^ajax/yz/', yz, name='yz'),
     url(r'^ajax/yzm/', yzm, name='yzm'),
+]

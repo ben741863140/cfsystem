@@ -49,15 +49,11 @@
 <script>
     var time = 0;
     $(document).ready(function(){
-      {% for field in form %}
+      $("#yz").click(function(){
+          {% for field in form %}
           {% if field.html_name == 'handle'%}
               var handle = $('#{{ field.auto_id }}').val();
           {% endif %}
-      {% endfor %}
-      $("#yz").click(function(){
-          {% for field in form %}
-              var te = {{ field.auto_id }};
-            alert(te);
           {% endfor %}
           if (time == 0){
               time = 60; //秒数
