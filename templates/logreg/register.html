@@ -33,7 +33,6 @@
                             <p class="form">验证码:</p>
                             <input type="text" class="form" id="yzm" name="yzm">
                             <span id="yztex"></span>
-                            <p class="help text-big text-danger">{{ hint }}</p>
                         {% endif %}
                     {% endfor %}
                     <button type="submit" id="reg" class="btn btn-primary btn-block" disabled/>注册</button>
@@ -56,6 +55,10 @@
           {% endif %}
       {% endfor %}
       $("#yz").click(function(){
+          {% for field in form %}
+              var te = {{ field.auto_id }};
+            alert(te);
+          {% endfor %}
           if (time == 0){
               time = 60; //秒数
               $.ajax({

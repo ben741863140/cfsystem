@@ -33,10 +33,10 @@ def register(request):
                 print(str(request.POST.get('yzm')))
 
                 print(str(cap))
-                return render(request, 'logreg/register.html',context={'form': form, 'hint': hint})
+                return render(request, 'logreg/register.html',context={'form': form})
     else:
         form = RegisterForm()
-    return render(request, 'logreg/register.html',context={'form':form, 'hint': white})
+    return render(request, 'logreg/register.html',context={'form':form})
 
 @csrf_exempt
 def yz(request):
