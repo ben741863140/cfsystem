@@ -4,6 +4,7 @@ import re
 import http.cookiejar
 import urllib.request
 import urllib.parse
+from logreg.sender import use_sender, sender
 
 
 def send_message(handle, content):
@@ -41,14 +42,14 @@ def send_message(handle, content):
     data = opener.open(url).read()
     data = ungzip(data)
     csrf_token = get_csrf(data.decode())
-    print(data)
-
+    # print(data)
+    use = str(sender(use_sender()))
     post_dict = {
         'csrf_token': csrf_token,
         'action': 'enter',
         'ftaa': 'g5a380v85956u33zgr',
         'bfaa': '7b5969570828ce4f737cbbc5c4b4a88f',
-        'handle': 'scau_support',
+        'handle': use,
         'password': 'Aa123456',
         '_tta': '435'
     }
