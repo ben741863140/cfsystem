@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% block css %}
+    {% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static "/bootstrap/css/bootstrap.min.css" %}">
+</head>
+<body>
+<script src="{% static "/jquery-3.3.1.min.js" %}"></script>
+{% block js %}
+{% endblock %}
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="/">SCAU-CF</a>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">首页<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/board">排行榜</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                {% if user.is_authenticated %}
+                    <span class="navbar-text">
+                        {{ user.username }}
+                    </span>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}?next={{ request.path }}">退出</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logreg/login">登录</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logreg/register">注册</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    {#    <div class="container">#}
+    {#        <div class="row">#}
+    {% block index %}
+    {% endblock %}
+    {#        </div>#}
+    {#    </div>#}
+</div>
+</body>
+</html>

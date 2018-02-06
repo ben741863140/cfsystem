@@ -1,0 +1,11 @@
+{% extends 'board/board.html' %}
+{% block content %}
+    {% for user in users %}
+        <tr>
+            <th scope="row">{{ user.rank }}</th>
+            <td>{{ user.realname }}</td>
+            <td>{{ user.handle }}</td>
+            <td><span class="rating">{{ user.rating }}</span></td>
+        </tr>
+    {% endfor %}
+{% endblock %}

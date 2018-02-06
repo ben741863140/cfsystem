@@ -14,6 +14,8 @@ white = ""
 
 @csrf_exempt
 def register(request):
+    if request.user.is_authenticated:
+        return redirect('/')
     global cap
     global hint
     global white
@@ -61,3 +63,7 @@ def yzm(request):
 
 def index(request):
     return render(request,'index.html')
+
+
+def base(request):
+    return render(request, 'base.html', {'user':request.user, 'request':request})

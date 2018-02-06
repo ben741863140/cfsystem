@@ -67,4 +67,3 @@ def send_message(handle, content):
     post_data = urllib.parse.urlencode(post_dict).encode()
     opener.open(url, post_data)
     print(data)
-

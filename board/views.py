@@ -41,8 +41,46 @@ def board_view(request):
             info.change = '+' + str(info.change)
         else:
             info.change = str(info.change)
-    return render(request, 'board/index.html',
-                  {'is_ch1': select == 'ch1', 'rating': infos, 'Time': time, 'date': datetime.datetime.now().year})
+    return render(request, 'board/board.html',
+                  {'is_ch1': select == 'ch1', 'user': infos, 'Time': time, 'date': datetime.datetime.now().year})
+
+
+def board_rating(request):
+    class User:
+        rank = rating = handle = 0
+
+    users = []
+    for user in CFUser.objects.all():
+        info = User()
+        info.rating = user.rating
+        info.handle = user.handle
+        users.append(info)
+    users.sort(key=lambda x: x.rating, reverse=True)
+    for i in range(len(users)): users[i].rank = i + 1
+    return render(request, 'board/board_rating.html', {'users': users})
+
+
+def board_upgrade(request, days_ago):
+    class User:
+        rank = rating = handle = oldRating = newRating = change = 0
+
+    users = []
+    word = {'14': '两周', '30': '一月', '90': '三月', '180': '半年'}
+    time = '近' + word[str(days_ago)]
+    for user in RatingChange.objects.filter(days_ago=days_ago):
+        info = User()
+        info.change = user.newRating - user.oldRating
+        if info.change <= 0:
+            continue
+        info.handle = user.cf_user.handle
+        info.oldRating = user.oldRating
+        info.newRating = user.newRating
+        users.append(info)
+    users.sort(key=lambda x: x.change, reverse=True)
+    for i in range(len(users)):
+        users[i].rank = i + 1
+        users[i].change = '+' + str(users[i].change)
+    return render(request, 'board/board_upgrade.html', {'users': users, 'time': time})
 
 
 def handle_list(request):

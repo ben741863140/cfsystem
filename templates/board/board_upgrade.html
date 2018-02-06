@@ -1,0 +1,22 @@
+{% extends 'board/board.html' %}
+{% block title %}
+    {{ time }}升级榜
+{% endblock %}
+{% block col %}
+    <th scope="col">增幅</th>
+{% endblock %}
+{% block content %}
+    {% for user in users %}
+        <tr>
+            <th scope="row">{{ user.rank }}</th>
+            <td>{{ user.realname }}</td>
+            <td>{{ user.handle }}</td>
+            <td>
+                <span class="oldRating">{{ user.oldRating }}</span>
+                ->
+                <span class="rating">{{ user.newRating }}</span>
+            </td>
+            <td>{{ user.change }}</td>
+        </tr>
+    {% endfor %}
+{% endblock %}
