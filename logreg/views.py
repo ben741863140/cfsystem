@@ -103,21 +103,21 @@ def yz2(request):
         # print(hand)
         random.seed()
         cap = ""
-        for temp in range(0,6):
+        for temp in range(0, 6):
             cap += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
         mes = str('Your handle is being linked to the SCAU_CFsystem. The verify code is '+ str(cap) + '. If the operator is not yourself, please ignore this message.')
         # print(cap)
-        send_message(str(hand),mes)
+        send_message(str(hand), mes)
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 @csrf_exempt
 def password_check(request):
     t = 'true'
     tex = str(request.GET.get('tex'))
-    if len(tex)<8:
+    if len(tex) < 8:
         t = 'false'
     check = False
-    for temp in range(0,len(tex)):
+    for temp in range(0, len(tex)):
         if tex[temp] < '0' or tex[temp] > '9':
             check = True
 
@@ -128,4 +128,4 @@ def password_check(request):
     return HttpResponse(t)
 
 def index(request):
-    return render(request,'index.html')
+    return render(request, 'index.html')
