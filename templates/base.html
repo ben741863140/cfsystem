@@ -3,7 +3,11 @@
 <html lang="zh-cmn-Hans">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>
+        {% block title %}
+        SCAU-CF
+        {% endblock %}
+    </title>
     {% block css %}
     {% endblock %}
     <link rel="stylesheet" type="text/css" href="{% static "/bootstrap/css/bootstrap.min.css" %}">
@@ -23,6 +27,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/board">排行榜</a>
                 </li>
+                {% if user.is_superuser >= 2 %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">管理</a>
+                    </li>
+                {% endif %}
             </ul>
             <ul class="nav navbar-nav">
                 {% if user.is_authenticated %}
@@ -43,12 +52,11 @@
             </ul>
         </div>
     </nav>
-    {#    <div class="container">#}
-    {#        <div class="row">#}
-    {% block index %}
-    {% endblock %}
-    {#        </div>#}
-    {#    </div>#}
 </div>
+{% block index %}
+{% endblock %}
+<footer class="my-5 pt-5 text-muted text-center text-small">
+    <p class="mb-1">@2018 Leon & Toshi</p>
+</footer>
 </body>
 </html>
