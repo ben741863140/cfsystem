@@ -38,7 +38,7 @@ def _deal_list(text):  # not a view function
     return {'results': results, 'handles': visit}
 
 
-def update_cf_user(res):
+def _update_cf_user(res): #not a view
     if res['status'] != 'OK':
         return
     if len(CFUser.objects.filter(handle=res['handle'])) == 0:
@@ -52,16 +52,20 @@ def update_cf_user(res):
 
 
 def list_add(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
     if request.method == 'POST':
         msg = _deal_list(request.POST['list'])
         for res in msg['results']:
-            update_cf_user(res)
+            _update_cf_user(res)
         msg['results'].sort(key=lambda x: x['status'])
         return render(request, 'admin/add_result.html', context=msg)
     return render(request, 'admin/list_add.html')
 
 
 def list_override(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
     if request.method == 'POST':
         msgs = _deal_list(request.POST['list'])
         handles = msgs['handles']
@@ -74,7 +78,7 @@ def list_override(request):
                 user.delete()
         for res in msgs['results']:
             if res['status'] == 'OK' and res['handle'] not in deleted:
-                update_cf_user(res)
+                _update_cf_user(res)
         return render(request, 'admin/add_result.html', context=msgs)
     return render(request, 'admin/list_override.html')
 
