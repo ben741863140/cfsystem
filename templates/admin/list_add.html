@@ -1,0 +1,27 @@
+{% extends 'admin/index.html' %}
+{% load staticfiles %}
+{% block js %}
+    {{ block.super }}
+    <script>
+        $(document).ready(function () {
+            $(".list-group-item").removeClass("active")
+            $('#element2').addClass('active')
+        })
+    </script>
+{% endblock %}
+{% block content %}
+    <table class="table">
+        <thead>
+        </thead>
+        <tbody>
+        <form action="" method="post">
+            {% csrf_token %}
+            <textarea rows="20" name="list"
+                      style="height: 100%; width: 100%">在此输入姓名与cf账号，每一行一对姓名和cf帐号，格式随意（大概），姓名可以不写</textarea>
+            <td align="center" style="border: 0px;">
+                <button type="submit" id="btn" class="btn btn-primary">提交</button>
+            </td>
+        </form>
+        </tbody>
+    </table>
+{% endblock %}

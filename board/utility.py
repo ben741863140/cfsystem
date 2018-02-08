@@ -36,16 +36,3 @@ def get_rating_change(cf_user, *days_ago):
     for day in filter(lambda x: x if x not in res.keys() else None, days_ago):
         res[day] = now_rating
     return res
-
-
-def get_user_info(line):
-    handle = re.findall(re.compile(r'[0-9a-zA-Z_]{3,24}'), line)
-    realname = re.findall(re.compile(r'[\u4e00-\u9fa5]{2,3}'), line)
-    if len(handle) == 0 or len(handle) > 1 or len(realname) > 1:
-        return {'status': 'FAILED', 'comment': '无法识别'}
-    if len(realname) == 0:
-        realname.append('')
-    res = get_rating(handle[0])
-    res['realname'] = realname[0]
-    res['handle'] = handle[0].lower()
-    return res

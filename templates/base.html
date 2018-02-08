@@ -22,13 +22,13 @@
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="/">首页<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/">首页</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" id="nav-element2">
                     <a class="nav-link" href="/board">排行榜</a>
                 </li>
-                {% if user.is_superuser >= 2 %}
-                    <li class="nav-item">
+                {% if user.is_superuser %}
+                    <li class="nav-item" id="nav-element3">
                         <a class="nav-link" href="/admin">管理</a>
                     </li>
                 {% endif %}

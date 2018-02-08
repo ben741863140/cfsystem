@@ -149,4 +149,4 @@ def index(request):
 
 
 def base(request):
-    return render(request, 'base.html', {'user': request.user, 'request': request})
+    return render(request, 'base.html')

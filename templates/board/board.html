@@ -4,46 +4,55 @@
     <script src="{% static "/bootstrap/js/popper.min.js" %}"></script>
     <script src="{% static "/bootstrap/js/bootstrap.min.js" %}"></script>
     <script src="{% static "/board/board.js" %}"></script>
+    <script>
+    $(document).ready(function () {
+        $('.nav-item').removeClass('active')
+        $('#nav-element2').addClass('active')
+    })
+    </script>
 {% endblock %}
 {% block index %}
+
     <div class="container">
-        <h3 class="text-center">
-            {% block title %}
-                分数排行榜
-            {% endblock %}
-        </h3>
-        <div class="row">
-            <div class="col-auto mr-auto"></div>
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                        data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">
-                    选择排行榜
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/board">分数排行榜</a>
-                    <a class="dropdown-item" href="14">近两周升级榜</a>
-                    <a class="dropdown-item" href="30">近一月升级榜</a>
-                    <a class="dropdown-item" href="90">近三月升级榜</a>
-                    <a class="dropdown-item" href="180">近半年升级榜</a>
+        <div class="container">
+            <h3 class="text-center">
+                {% block title %}
+                    分数排行榜
+                {% endblock %}
+            </h3>
+            <div class="row">
+                <div class="col-auto mr-auto"></div>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        选择排行榜
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="/board">分数排行榜</a>
+                        <a class="dropdown-item" href="14">近两周升级榜</a>
+                        <a class="dropdown-item" href="30">近一月升级榜</a>
+                        <a class="dropdown-item" href="90">近三月升级榜</a>
+                        <a class="dropdown-item" href="180">近半年升级榜</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">名次</th>
-            <th scope="col">姓名</th>
-            <th scope="col">CF帐号</th>
-            <th scope="col">分数</th>
-            {% block col %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">名次</th>
+                <th scope="col">姓名</th>
+                <th scope="col">CF帐号</th>
+                <th scope="col">分数</th>
+                {% block col %}
+                {% endblock %}
+            </tr>
+            </thead>
+            <tbody>
+            {% block content %}
             {% endblock %}
-        </tr>
-        </thead>
-        <tbody>
-        {% block content %}
-        {% endblock %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        <div>
 {% endblock %}

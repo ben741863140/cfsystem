@@ -1,0 +1,25 @@
+{% extends 'admin/index.html' %}
+{% block content %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">导入信息</th>
+            <th scope="col">CF帐号</th>
+            <th scope="col">姓名</th>
+            <th scope="col">状态</th>
+            <th scope="col">附加信息</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for result in results %}
+            <tr>
+                <th scope="row">{{ result.text }}</th>
+                <th scope="row">{{ result.handle }}</th>
+                <th scope="row">{{ result.realname }}</th>
+                <th scope="row">{{ result.status }}</th>
+                <th scope="row">{{ result.comment }}</th>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

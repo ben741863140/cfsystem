@@ -1,0 +1,36 @@
+{% extends 'admin/index.html' %}
+{% load staticfiles %}
+{% block js %}
+    {{ block.super }}
+    <script src="{% static '/admin/index.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">CF帐号</th>
+            <th scope="col">姓名</th>
+            <th scope="col">分数</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr class="element">
+                <th scope="row" class="handle">{{ user.handle }}</th>
+                <td>{{ user.realname }}</td>
+                <td>{{ user.rating }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block second_row %}
+    <div class="row">
+        <div class="col-5"></div>
+        <div class="col-4">
+        </div>
+        <div class="col-3">
+            <button id="btn" class="btn btn-primary">删除</button>
+        </div>
+    </div>
+{% endblock %}
