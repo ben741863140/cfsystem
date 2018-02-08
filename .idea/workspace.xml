@@ -4,8 +4,10 @@
     <list default="true" id="66dd57f7-abab-4c38-bc53-e470f40aea50" name="Default" comment="">
       <change beforePath="" afterPath="$PROJECT_DIR$/static/admin/index.js" />
       <change beforePath="" afterPath="$PROJECT_DIR$/templates/admin/add_result.html" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/templates/admin/list_add.html" />
       <change beforePath="" afterPath="$PROJECT_DIR$/templates/admin/list_override.html" />
       <change beforePath="" afterPath="$PROJECT_DIR$/templates/admin/modify.html" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/admin/urls.py" afterPath="$PROJECT_DIR$/admin/urls.py" />
       <change beforePath="$PROJECT_DIR$/admin/views/index.py" afterPath="$PROJECT_DIR$/admin/views/index.py" />
@@ -13,12 +15,11 @@
       <change beforePath="$PROJECT_DIR$/board/views.py" afterPath="$PROJECT_DIR$/board/views.py" />
       <change beforePath="$PROJECT_DIR$/logreg/views.py" afterPath="$PROJECT_DIR$/logreg/views.py" />
       <change beforePath="$PROJECT_DIR$/sender_list.dat" afterPath="$PROJECT_DIR$/sender_list.dat" />
-      <change beforePath="$PROJECT_DIR$/static/bootstrap/js/bootstrap.bundle.js" afterPath="$PROJECT_DIR$/static/bootstrap/js/bootstrap.bundle.js" />
       <change beforePath="$PROJECT_DIR$/templates/admin/auto_update/set_auto_update.html" afterPath="$PROJECT_DIR$/templates/admin/auto_update/set_auto_update.html" />
       <change beforePath="$PROJECT_DIR$/templates/admin/index.html" afterPath="$PROJECT_DIR$/templates/admin/index.html" />
       <change beforePath="$PROJECT_DIR$/templates/base.html" afterPath="$PROJECT_DIR$/templates/base.html" />
       <change beforePath="$PROJECT_DIR$/templates/board/board.html" afterPath="$PROJECT_DIR$/templates/board/board.html" />
-      <change beforePath="$PROJECT_DIR$/templates/board/handlelist.html" afterPath="$PROJECT_DIR$/templates/admin/list_add.html" />
+      <change beforePath="$PROJECT_DIR$/templates/board/handlelist.html" afterPath="" />
       <change beforePath="$PROJECT_DIR$/use_sender.dat" afterPath="$PROJECT_DIR$/use_sender.dat" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -36,7 +37,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="index.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="index.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/admin/views/index.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="3864">
@@ -80,6 +81,16 @@
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="index.html" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/admin/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="420">
+              <caret line="19" column="99" lean-forward="false" selection-start-line="19" selection-start-column="99" selection-end-line="19" selection-end-column="99" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -142,7 +153,6 @@
         <option value="$PROJECT_DIR$/use_sender.dat" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/templates/board/board.html" />
-        <option value="$PROJECT_DIR$/templates/admin/index.html" />
         <option value="$PROJECT_DIR$/board/views.py" />
         <option value="$PROJECT_DIR$/templates/admin/list_add.html" />
         <option value="$PROJECT_DIR$/templates/admin/modify.html" />
@@ -151,6 +161,7 @@
         <option value="$PROJECT_DIR$/templates/admin/list_override.html" />
         <option value="$PROJECT_DIR$/board/utility.py" />
         <option value="$PROJECT_DIR$/admin/views/index.py" />
+        <option value="$PROJECT_DIR$/templates/admin/index.html" />
       </list>
     </option>
   </component>
@@ -686,14 +697,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/admin/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-630">
-          <caret line="6" column="20" lean-forward="false" selection-start-line="6" selection-start-column="20" selection-end-line="6" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/board/board.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="168">
@@ -787,6 +790,14 @@
           <folding>
             <element signature="e#0#45#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/admin/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="19" column="99" lean-forward="false" selection-start-line="19" selection-start-column="99" selection-end-line="19" selection-end-column="99" />
+          <folding />
         </state>
       </provider>
     </entry>
