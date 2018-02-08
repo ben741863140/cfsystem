@@ -28,4 +28,5 @@ def sender(num):
     handle = ""
     for i in range(0, num):
         handle = str(file.readline())
+    file.close()
     return handle

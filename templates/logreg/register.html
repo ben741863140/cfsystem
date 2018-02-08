@@ -1,95 +1,134 @@
 {% extends 'base.html' %}
 {% block css %}
     <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">
+    <style>
+        .errorlist {
+            color: red;
+        }
+    </style>
 {% endblock %}
 {% block index %}
     <div class="flex-center">
-        <div class="container">
-            <div class="flex-center">
-                <div class="unit-1-2 unit-1-on-mobile">
-                    <h3>注册</h3>
-                    <form class="form" action="{% url 'logreg:register' %}" method="post">
-                        {% csrf_token %}
-                        {% for field in form %}
-                            {{ field.label_tag }}
-                            {{ field }}
-                            {{ field.errors }}
-                            {% if field.help_text %}
-                                <p class="help text-small text-muted">{{ field.help_text|safe }}</p>
-                            {% endif %}
-                            {% if field.html_name == 'handle' %}
-                                <button type="button" class="btn btn-primary" id="yz">验证</button>
-                                <p><span id="okay"></span></p>
-                                <p class="form">验证码:</p>
-                                <input type="text" class="form" id="yzm" name="yzm">
-                                <span id="yztex"></span>
-                                <p class="help text-big text-danger">{{ hint }}</p>
-                            {% endif %}
-                        {% endfor %}
-                        <button type="submit" id="reg" class="btn btn-primary btn-block" disabled/>
-                        注册</button>
-                        <input type="hidden" name="next" value="{{ next }}"/>
-                    </form>
-                    <div class="flex-center top-gap text-small">
-                        <a href="{% url 'login' %}">已有账号登录</a>
-                    </div>
+    <div class="container">
+        <div class="flex-center">
+            <div class="unit-1-2 unit-1-on-mobile">
+                <h3>注册</h3>
+                <form class="form" action="{% url 'logreg:register' %}" method="post">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.auto_id == 'id_username' %}
+                        <span id="usertex"></span>
+                        {% endif %}
+                        {% if field.auto_id == 'id_password2' %}
+                        <span id="pastex"></span>
+                        {% endif %}
+                        {{ field.errors }}
+                        {% if field.help_text %}
+                            <p class="help text-small text-muted">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                        {% if field.html_name == 'handle' %}
+                            <button type="button" class="btn btn-primary" id="yz">验证</button>
+                            <p><span id="okay"></span></p>
+                            <p class="form">验证码:</p>
+                            <input type="text" class="form" id="yzm" name="yzm">
+                            <span id="yztex"></span>
+                        {% endif %}
+                    {% endfor %}
+                    <button type="submit" id="reg" class="btn btn-primary btn-block" disabled/>注册</button>
+                    <input type="hidden" name="next" value="{{ next }}"/>
+                </form>
+                <div class="flex-center top-gap text-small">
+                    <a href="{% url 'login' %}">已有账号登录</a>
                 </div>
             </div>
         </div>
     </div>
-    <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script>
-        var time = 0;
-        $(document).ready(function () {
-            {% for field in form %}
-                {% if field.html_name == 'handle'%}
-                    var handle = $('#{{ field.auto_id }}').val();
-                {% endif %}
-            {% endfor %}
-            $("#yz").click(function () {
-                if (time == 0) {
-                    time = 60; //秒数
-                    $.ajax({
-                        type: "POST",
-                        url: "/ajax/yz/",
-                        data: {"hand": handle},
-                        success: function (ret) {
-                            $('#okay').html(ret.result)
-                            $('#reg').removeAttr('disabled')
-                        }
-                    })
-                    //启动计时器，倒计时time秒后自动关闭计时器。
-                    var index = setInterval(function () {
-                        time--;
-                        $('#yz').html('验证(' + time + '秒)')
-                        if (time == 0) {
-                            $('#yz').html('重新获取')
-                            clearInterval(index);
-                        }
-                    }, 1000);
+</div>
+<script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+    var time = 0;
+    $(document).ready(function(){
+      $("#id_username").keyup(function () {
+          var tex = $('#id_username').val();
+          var ans = "";
+          $.get('/ajax/usercheck/',{'tex':tex},function (ret) {
+              for (var i=0; i< ret.length; ++i)
+                  ans += ret[i];
+              if (ans == 'true')
+                  {$('#usertex').html("<p class=\"text-primary\">用户名可用!</p>");}
+              else
+                  {$('#usertex').html("<p class=\"text-danger\">用户名不可用!</p>");}
+          });
+      });
+      $("#yz").click(function(){
+          {% for field in form %}
+          {% if field.html_name == 'handle'%}
+              var handle = $('#{{ field.auto_id }}').val();
+          {% endif %}
+          {% endfor %}
+          if (time == 0){
+              time = 60; //秒数
+              $.ajax({
+                type:"POST",
+                url:"/ajax/yz/",
+                data:{"hand":handle},
+                success: function(ret){
+                    $('#okay').html(ret.result)
+                    $('#reg').removeAttr('disabled')
                 }
-                else {
-                    alert(time + '秒后才能重新发送验证码');
-                }
-            });
-            $('#yzm').focus();
-            $('#yzm').keyup(function () {
-                var tex = $('#yzm').val();
-                var cap = "";
-                var flag = false;
-                $.get('/ajax/yzm/', function (ret) {
-                    for (var i = 0; i < ret.length; ++i)
-                        cap += ret[i];
-                    if (cap == "") flag = false
-                    else flag = true
-                    if (cap == tex && flag) {
-                        $('#yztex').html("<p class=\"text-primary\">验证码正确!</p>");
-                    }
-                    else {
-                        $('#yztex').html("<p class=\"text-danger\">验证码错误!</p>");
-                    }
-                });
-            });
-        });
-    </script>
+              })
+              //启动计时器，倒计时time秒后自动关闭计时器。
+            var index = setInterval(function(){
+            time--;
+            $('#yz').html('验证('+time+'秒)')
+            if (time == 0) {
+                $('#yz').html('重新获取')
+                clearInterval(index);
+            }
+            }, 1000);
+          }
+          else{
+              alert(time+'秒后才能重新发送验证码');
+          }
+      });
+      $('#id_password1').keyup(function () {
+          var tex = $('#id_password1').val();
+          var com = $('#id_password2').val();
+          if(tex == com)
+              {$('#pastex').html("<p class=\"text-primary\">密码输入一致!</p>");}
+          else
+              {$('#pastex').html("<p class=\"text-danger\">密码输入不一致!</p>");}
+          if (com == "")
+              {$('#pastex').html("");}
+      });
+      $('#id_password2').keyup(function () {
+          var tex = $('#id_password1').val();
+          var com = $('#id_password2').val();
+          if(tex == com)
+              {$('#pastex').html("<p class=\"text-primary\">密码输入一致!</p>");}
+          else
+              {$('#pastex').html("<p class=\"text-danger\">密码输入不一致!</p>");}
+          if (com == "")
+              {$('#pastex').html("");}
+      });
+      $('#yzm').focus();
+      $('#yzm').keyup(function () {
+          var tex = $('#yzm').val();
+          var cap ="";
+          var flag = false;
+          $.get('/ajax/yzm/',function (ret) {
+              for (var i=0; i< ret.length; ++i)
+                  cap += ret[i];
+              if(cap == "") flag=false
+              else flag =true
+              if(cap == tex && flag)
+                {$('#yztex').html("<p class=\"text-primary\">验证码正确!</p>");}
+              else
+                {$('#yztex').html("<p class=\"text-danger\">验证码错误!</p>");}
+          });
+      });
+    });
+</script>
 {% endblock %}

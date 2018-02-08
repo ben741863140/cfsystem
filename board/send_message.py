@@ -53,6 +53,8 @@ def send_message(handle, content):
         'password': 'Aa123456',
         '_tta': '435'
     }
+    # print(use)
+    # print(handle)
     post_data = urllib.parse.urlencode(post_dict).encode()
     opener.open(url, post_data)
     url = 'http://codeforces.com/usertalk?other=' + str(handle)
@@ -67,4 +69,4 @@ def send_message(handle, content):
     }
     post_data = urllib.parse.urlencode(post_dict).encode()
     opener.open(url, post_data)
-    print(data)
+    # print(data)
