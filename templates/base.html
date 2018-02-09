@@ -42,7 +42,7 @@
                         <a class="nav-link" href="{% url 'logout' %}?next={{ request.path }}">退出</a>
                     </li>
                 {% else %}
-                    <li class="nav-item" >
+                    <li class="nav-item", style="margin-left: auto" >
                         <a class="nav-link" href="/logreg/login">登录</a>
                     </li>
                     <li class="nav-item">
