@@ -3,6 +3,7 @@
 <html lang="zh-cmn-Hans">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>
         {% block title %}
         SCAU-CF
@@ -11,51 +12,44 @@
     {% block css %}
     {% endblock %}
     <link rel="stylesheet" type="text/css" href="{% static "/bootstrap/css/bootstrap.min.css" %}">
+
 </head>
 <body>
 <script src="{% static "/jquery-3.3.1.min.js" %}"></script>
 {% block js %}
 {% endblock %}
-<div class="container">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <ul class="nav nav-tabs">
         <a class="navbar-brand" href="/">SCAU-CF</a>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/">首页</a>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">首页</a>
                 </li>
-                <li class="nav-item" id="nav-element2">
-                    <a class="nav-link" href="/board">排行榜</a>
+                <li class="nav-item" >
+                    <a class="nav-link" id="nav-element2" href="/board">排行榜</a>
                 </li>
                 {% if user.is_superuser %}
-                    <li class="nav-item" id="nav-element3">
-                        <a class="nav-link" href="/admin">管理</a>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-element3" href="/admin">管理</a>
                     </li>
                 {% endif %}
-            </ul>
-            <ul class="nav navbar-nav">
                 {% if user.is_authenticated %}
-                    <span class="navbar-text">
+                    <span class="navbar-text", style="margin-left: auto">
                         {{ user.username }}
                     </span>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'password_change' %}">修改密码</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" style="text-align: right">
                         <a class="nav-link" href="{% url 'logout' %}?next={{ request.path }}">退出</a>
                     </li>
                 {% else %}
-                    <li class="nav-item">
+                    <li class="nav-item" >
                         <a class="nav-link" href="/logreg/login">登录</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/logreg/register">注册</a>
                     </li>
                 {% endif %}
-            </ul>
-        </div>
-    </nav>
-</div>
+    </ul>
 {% block index %}
 {% endblock %}
 <footer class="my-5 pt-5 text-muted text-center text-small">
