@@ -1,45 +1,47 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>修改时间</title>
-    {#    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">#}
-    {#    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">#}
-    <link rel="stylesheet" href="../static/bootstrap/css/bootstrap.min.css">
-</head>
-<body>
-<script src="../static/jquery-3.3.1.min.js"></script>
-<script src="../static/bootstrap/js/popper.min.js"></script>
-<script src="../static/bootstrap/js/bootstrap.min.js"></script>
-<script src="../../../static/admin/auto_update/update.js"></script>
-<div class="container">
-    <div class="row">
-        <div class="col-sm">
-        </div>
-        <div class="col-sm">
-            <div>
-                <h3>自动刷新设置</h3>
-                <br/>
-                是否开启自动刷新？
-                <input type="checkbox" id="box_yes">是
-                <input type="checkbox" id="box_no">否<br/>
-                <br/>
-                时间(24小时制)：
-                <input type="text" maxlength="2" size="2" id="hour" data-toggle="tooltip" data-placement="bottom"
-                       title="必须是[0,24)之间的整数" data-trigger="manual">
-                ：
-                <input type="text" maxlength="2" size="2" id="minute" data-toggle="tooltip" data-placement="bottom"
-                       title="必须是[0,60)之间的整数" data-trigger="manual">
-                <br/>
-                <br/>
+{% extends 'admin/index.html' %}
+{% load staticfiles %}
+{% block js %}
+    <script src="{% static "bootstrap/js/popper.min.js" %}"></script>
+    <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "admin/auto_update/update.js" %}"></script>
+    {{ block.super }}
+    <script>
+        $(document).ready(function () {
+            $(".list-group-item").removeClass("active")
+            $('#element4').addClass('active')
+            $('.list-group-item').click(function () {
+                window.location.href = $(this).attr('href')
+            })
+        })
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+                <div>
+                    <h3>自动刷新设置</h3>
+                    <br/>
+                    是否开启自动刷新？
+                    <input type="checkbox" id="box_yes">是
+                    <input type="checkbox" id="box_no">否<br/>
+                    <br/>
+                    时间(24小时制)：
+                    <input type="text" maxlength="2" size="2" id="hour" data-toggle="tooltip" data-placement="bottom"
+                           title="必须是[0,24)之间的整数" data-trigger="manual">
+                    ：
+                    <input type="text" maxlength="2" size="2" id="minute" data-toggle="tooltip" data-placement="bottom"
+                           title="必须是[0,60)之间的整数" data-trigger="manual">
+                    <br/>
+                    <br/>
 
-                <button type="button" class="btn btn-primary" id="btn">更改</button>
+                    <button type="button" class="btn btn-primary" id="btn">更改</button>
+                </div>
+            </div>
+            <div class="col-sm">
             </div>
         </div>
-        <div class="col-sm">
-        </div>
     </div>
-</div>
-</body>
-</html>
+{% endblock %}
