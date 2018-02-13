@@ -1,0 +1,33 @@
+{% extends 'admin/index.html' %}
+{% load staticfiles %}
+{% block head %}
+    <meta http-equiv="refresh" content="1;URL=set_auto_update">
+{% endblock %}
+{% block js %}
+    <script src="{% static "bootstrap/js/popper.min.js" %}"></script>
+    <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+    {{ block.super }}
+    <script>
+        $(document).ready(function () {
+            $(".list-group-item").removeClass("active")
+            $('#element4').addClass('active')
+            $('.list-group-item').click(function () {
+                window.location.href = $(this).attr('href')
+            })
+        })
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+            </div>
+            <div class="col-sm">
+                <h3>设置成功√</h3>
+                <h3>1秒后自动跳转</h3>
+            </div>
+            <div class="col-sm">
+            </div>
+        </div>
+    </div>
+{% endblock %}

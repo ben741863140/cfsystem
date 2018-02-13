@@ -24,6 +24,7 @@ class AutoUpdate(threading.Thread):
             print('开始更新数据库...')
             update_rating()
             update_rating_change()
+            print('数据库更新完成')
 
 
 def auto_update():

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $.get("{% url 'get_config' %}", {}, function (ret) {
+    $.get("get_config", {}, function (ret) {
         $('#hour').attr('value', ret.hour);
         $('#minute').attr('value', ret.minute);
         $('#box_yes').attr('checked', ret.is_open)
@@ -35,7 +35,12 @@ $(document).ready(function () {
         var minute = $('#minute').val()
         var is_open = $('#box_yes').is(':checked')
         if (0 <= hour && hour < 24 && 0 <= minute && minute < 60) {
-            $.get("{% url 'set_auto_update' %}", {'hour': hour, 'minute': minute, 'is_open': is_open}, function (ret) {
+            $.get("set_auto_update", {
+                'hour': hour,
+                'minute': minute,
+                'is_open': is_open
+            }, function (ret) {
+                window.location.href = 'finished'
             });
         }
     }));

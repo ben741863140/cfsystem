@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import datetime, re
+import datetime
 
 
 def get_rating(handle):

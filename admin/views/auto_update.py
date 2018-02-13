@@ -8,7 +8,7 @@ def set_auto_update(request):
         return HttpResponseRedirect('..')
     if 'hour' in request.GET.keys():
         get = request.GET.copy()
-        get['is_open'] = True if get['is_open']=='true' else False
+        get['is_open'] = True if get['is_open'] == 'true' else False
         set_settings(get)
         return JsonResponse({})
     return render(request, 'admin/auto_update/set_auto_update.html')
@@ -19,3 +19,7 @@ def get_config(request):
         return HttpResponseRedirect('..')
     info = get_settings()
     return JsonResponse(info)
+
+
+def finished(request):
+    return render(request, 'admin/auto_update/finished.html')
