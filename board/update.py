@@ -26,16 +26,3 @@ def update_rating_change():
             rating_change.oldRating = res[day]
             rating_change.newRating = res['newRating']
             rating_change.save()
-
-# def load_cf_user():
-#     handles = []
-#     for handle in open('cf.txt', 'r').readlines():
-#         handle = handle.strip().lower()
-#         handles.append(handle)
-#         if len(CFUser.objects.filter(handle=handle)) == 0:
-#             CFUser.objects.create(handle=handle)
-#
-#     for user in CFUser.objects.all():
-#         if user.handle not in handles:
-#             print('delete cfuser', user.handle)
-#             CFUser.objects.filter(handle=user.handle).delete()

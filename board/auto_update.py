@@ -3,77 +3,90 @@ from board.update import update_rating_change, update_rating
 from board.models import CFUser
 
 
+class UpdateSetting:
+    def __init__(self, is_open=False, hour=0, minute=0):
+        self.is_open = is_open
+        self.hour = hour
+        self.minute = minute
+
+    def write_setting(self):
+        open(r'auto_update.ini', 'w').close()
+        file = open(r'auto_update.ini', 'a')
+        if self.is_open:
+            print('is_open: YES', file=file)
+        else:
+            print('is_open: NO', file=file)
+        print('time: %02d:%02d' % (int(self.hour), int(self.minute)), file=file)
+        file.close()
+
+    def get_seconds(self):
+        return self.hour * 3600 + self.minute * 60
+
+    def load_setting(self):
+        self.is_open = False
+        try:
+            content = open(r'auto_update.ini', 'r').readlines()
+        except FileNotFoundError:
+            return
+        if len(content) < 2:
+            return
+        if re.findall(re.compile('yes', re.IGNORECASE), content[0]):
+            self.is_open = True
+        hour, minute = re.findall(re.compile(r'[0-9]{1,2}:[0-9]{1,2}'), content[1])[0].split(':')
+        self.hour = int(hour)
+        self.minute = int(minute)
+
+
 class AutoUpdate(threading.Thread):
 
-    def __init__(self, first_seconds):
+    def __init__(self):
         threading.Thread.__init__(self)
-        self.first_seconds = first_seconds
-        self.first = True
         self._keep_run = True
+        self.update_setting = UpdateSetting()
 
     def stop(self):
         self._keep_run = False
 
     def run(self):
         while self._keep_run:
-            if self.first:
-                self.first = False
-                time.sleep(self.first_seconds)
-            else:
-                time.sleep(60 * 60 * 24)
-            print('开始更新数据库...')
-            update_rating()
-            update_rating_change()
-            print('数据库更新完成')
+            if self.ready():
+                self.update()
+            time.sleep(10 * 60)
+
+    def ready(self):
+        if (get_farthest_update() - datetime.datetime.now()).seconds <= 60 * 30:
+            return False
+        self.update_setting.load_setting()
+        diff = self.update_setting.get_seconds() - get_now_seconds()
+        return 0 <= diff <= 15 * 60
+        # if 0 <= diff <= 15 * 60:
+        #     return True
+        # if diff < 0:
+        #     diff += 24 * 3600
+        # minute = diff / 60 % 60
+        # hour = diff / 3600
+        # print('距离下次更新还有%d小时%d分钟' % (hour, minute))
+
+    @staticmethod
+    def update():
+        print('开始更新数据库...')
+        update_rating_change()
+        update_rating()
+        print('数据库更新完成')
+
+
+def get_now_seconds():
+    now = datetime.datetime.now()
+    return now.hour * 3600 + now.minute * 60 + now.second
+
+
+def get_farthest_update():
+    _time = datetime.datetime.now()
+    for user in CFUser.objects.all():
+        _time = min(_time, user.last_update)
+    return _time
 
 
 def auto_update():
-    settings = get_settings()
-    if settings['is_open'] and threading.active_count() == 1:
-        now = datetime.datetime.now()
-        now_time = (now.hour * 60 + now.minute) * 60
-        set_time = (int(settings['hour']) * 60 + int(settings['minute'])) * 60
-        if set_time < now_time:
-            if len(CFUser.objects.all()) > 0:
-                last_update = CFUser.objects.all()[0].last_update
-                if last_update.day < now.day:
-                    set_time = now_time
-                else:
-                    set_time += 60 * 60 * 24
-            else:
-                set_time += 60 * 60 * 24
-        seconds = set_time - now_time
-        left_hour = int(seconds / 3600)
-        left_minute = int(seconds % 3600 / 60)
-        if seconds:
-            print('距离下次自动更新还有', left_hour, '小时', left_minute, '分钟')
-        AutoUpdate(first_seconds=set_time - now_time).start()
-    else:
-        print('自动更新处于关闭状态')
-
-
-def get_settings():
-    settings = {'is_open': False}
-    try:
-        content = open(r'auto_update.ini', 'r').readlines()
-    except FileNotFoundError:
-        return settings
-    if len(content) < 2:
-        return settings
-    if re.findall(re.compile('yes', re.IGNORECASE), content[0]):
-        settings['is_open'] = True
-    hour, minute = re.findall(re.compile(r'[0-9]{1,2}:[0-9]{1,2}'), content[1])[0].split(':')
-    settings['hour'] = hour
-    settings['minute'] = minute
-    return settings
-
-
-def set_settings(info):
-    open(r'auto_update.ini', 'w').close()
-    file = open(r'auto_update.ini', 'a')
-    if info['is_open']:
-        print('is_open: YES', file=file)
-    else:
-        print('is_open: NO', file=file)
-    print('time: %02d:%02d' % (int(info['hour']), int(info['minute'])), file=file)
-    file.close()
+    if threading.active_count() == 1:
+        AutoUpdate().start()

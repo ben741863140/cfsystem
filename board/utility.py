@@ -7,7 +7,9 @@ def get_rating(handle):
     handle = str(handle)
     url = 'http://codeforces.com/api/user.info?handles=' + handle
     results = BeautifulSoup(requests.get(url).text, 'html.parser').text
+    print('我是10行--debug')
     results = eval(results)
+    print('我是12行--debug')
     if results['status'] != 'OK':
         results['comment'] = 'handle: ' + handle + ' 不存在'
         return results
@@ -21,7 +23,9 @@ def get_rating(handle):
 def get_rating_change(cf_user, *days_ago):
     url = 'http://codeforces.com/api/user.rating?handle=' + cf_user.handle
     results = BeautifulSoup(requests.get(url).text, 'html.parser').text
+    print('我是24行--debug')
     results = eval(results)
+    print('我是26行--debug')
     if results['status'] != 'OK':
         raise Exception(results['comment'])
     res = {}

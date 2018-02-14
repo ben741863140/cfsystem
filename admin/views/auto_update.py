@@ -1,6 +1,6 @@
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render
-from board.auto_update import get_settings, set_settings
+from board.auto_update import UpdateSetting
 
 
 def set_auto_update(request):
@@ -9,7 +9,7 @@ def set_auto_update(request):
     if 'hour' in request.GET.keys():
         get = request.GET.copy()
         get['is_open'] = True if get['is_open'] == 'true' else False
-        set_settings(get)
+        UpdateSetting(is_open=get['is_open'], hour=get['hour'], minute=get['minute']).write_setting()
         return JsonResponse({})
     return render(request, 'admin/auto_update/set_auto_update.html')
 
@@ -17,7 +17,9 @@ def set_auto_update(request):
 def get_config(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return HttpResponseRedirect('..')
-    info = get_settings()
+    setting = UpdateSetting()
+    setting.load_setting()
+    info = {'is_open': setting.is_open, 'hour': setting.hour, 'minute': setting.minute}
     return JsonResponse(info)
 
 
