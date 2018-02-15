@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import datetime
 
 
 def get_rating(handle):
@@ -20,23 +19,12 @@ def get_rating(handle):
     return res
 
 
-def get_rating_change(cf_user, *days_ago):
-    url = 'http://codeforces.com/api/user.rating?handle=' + cf_user.handle
+def get_rating_change(handle):
+    url = 'http://codeforces.com/api/user.rating?handle=' + str(handle)
     results = BeautifulSoup(requests.get(url).text, 'html.parser').text
     print('我是24行--debug')
     results = eval(results)
     print('我是26行--debug')
     if results['status'] != 'OK':
         raise Exception(results['comment'])
-    res = {}
-    now_rating = 0
-    for info in results['result']:
-        now_rating = info['newRating']
-        update_time = datetime.datetime.fromtimestamp(info['ratingUpdateTimeSeconds'])
-        for day in filter(lambda x: x if x not in res.keys() else None, days_ago):
-            if (datetime.datetime.now() - update_time).days <= day:
-                res[day] = info['oldRating']
-    res['newRating'] = now_rating
-    for day in filter(lambda x: x if x not in res.keys() else None, days_ago):
-        res[day] = now_rating
-    return res
+    return results['result']

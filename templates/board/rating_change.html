@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block index %}
+    <div id="container" style="min-width: 600px; height: 700px;"></div>
+    <script src="{% static "board/highcharts.js" %}"></script>
+    <script>
+        var chart = Highcharts.chart('container', {
+            title: {
+                text: null
+            },
+            xAxis: {
+                type: 'datetime',
+                minTickInterval: 1000 * 3600 * 24,
+                dateTimeLabelFormats: {
+                    day: '%Y-%m-%d',
+                    month: '%y-%m',
+                    year: '%Y'
+                }
+            },
+            yAxis: {
+                title: {
+                    text: '分数'
+                },
+                tickPositioner: function () {
+                    var all_positions = [0, 1200, 1400, 1600, 1900, 2200, 2400]
+                    var positions = []
+                    for (var i = 1; i < all_positions.length - 1; i++) {
+                        var pre = all_positions[i - 1]
+                        var nxt = all_positions[i + 1]
+                        var now = all_positions[i]
+                        if (now < this.dataMax && nxt > this.dataMin ||
+                            now > this.dataMin && pre < this.dataMax) {
+                            positions.push(now)
+                        }
+                    }
+                    return positions
+                }
+            },
+            tooltip: {
+                xDateFormat: '%Y-%m-%d'
+            },
+            series: [{
+                name: 'rating',
+                data: [{{ data }}],
+                zones: [{
+                    value: 1200,
+                    color: '#808080'
+                }, {
+                    value: 1400,
+                    color: '#008000'
+                }, {
+                    value: 1600,
+                    color: '#03A89E'
+                }, {
+                    value: 1900,
+                    color: '#0000ff'
+                }, {
+                    value: 2200,
+                    color: '#a0a'
+                }, {
+                    value: 2400,
+                    color: '#FF8C00'
+                }, {
+                    color: '#ff0000'
+                }]
+
+            }],
+
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: false
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

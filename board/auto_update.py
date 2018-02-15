@@ -81,9 +81,11 @@ def get_now_seconds():
 
 
 def get_farthest_update():
+    print('in get_farthest_update --debug')
     _time = datetime.datetime.now()
     for user in CFUser.objects.all():
         _time = min(_time, user.last_update)
+    print('out get_farthest_update --debug')
     return _time
 
 

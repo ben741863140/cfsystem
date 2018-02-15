@@ -12,7 +12,8 @@ class CFUser(models.Model):
 
 class RatingChange(models.Model):
     cf_user = models.ForeignKey(CFUser, on_delete=models.CASCADE)
-    days_ago = models.IntegerField()
+    days_ago = models.IntegerField(null=True)
     oldRating = models.IntegerField(default=0)
     newRating = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
+    ratingUpdateTimeSeconds = models.IntegerField(null=True)

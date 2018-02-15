@@ -45,4 +45,14 @@ def board_upgrade(request, days_ago):
     return render(request, 'board/board_upgrade.html', {'users': users, 'time': time})
 
 
+def board_rating_change(request, handle):
+    queryset = RatingChange.objects.filter(cf_user__handle=handle)
+    data = []
+    for change in queryset.filter(ratingUpdateTimeSeconds__isnull=False):
+        data.append([change.ratingUpdateTimeSeconds * 1000, change.newRating])
+    # print(str(data)[1:-1])
+    data = str(data)[1:-1]
+    return render(request, 'board/rating_change.html', {'data': data})
+
+
 auto_update()
