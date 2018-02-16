@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block index %}
-    <div id="container" style="min-width: 600px; height: 700px;"></div>
+    <div id="container" style="min-width: 100px; height: 700px;"></div>
     <script src="{% static "board/highcharts.js" %}"></script>
     <script>
         var chart = Highcharts.chart('container', {
@@ -22,7 +22,7 @@
                     text: '分数'
                 },
                 tickPositioner: function () {
-                    var all_positions = [0, 1200, 1400, 1600, 1900, 2200, 2400]
+                    var all_positions = [0, 800, 1000, 1200, 1400, 1600, 1900, 2200, 2400]
                     var positions = []
                     for (var i = 1; i < all_positions.length - 1; i++) {
                         var pre = all_positions[i - 1]
