@@ -1,30 +1,88 @@
-<!DOCTYPE html>
-<html lang="zh-cn">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>首页</title>
-    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">
-</head>
-<body>
-<div class="flex-center">
-    <div class="container">
-        <div>
-            <h1 class="logo"><a class="" href="{% url 'index' %}">SCAU_CF排行榜</a></h1>
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block index %}
             {% if user.is_authenticated %}
-                <p>你已登录，欢迎你：<a href="#">{{ user.username }}</a></p>
-                <button class="btn btn-default"><a href="{% url 'logout' %}?next={{ request.path }}">注销登录</a></button>
-                <button class="btn btn-default"><a href="{% url 'password_change' %}?next={{ request.path }}">修改密码</a></button>
+                <div class="container">
+                    <h3 class="font-weight-bold">欢迎你：<a class="font-italic" style="color: #005cbf">{{ user.username }}</a></h3>
+                    <div id="container" style="min-width: 100px; height: 700px;"></div>
+                    <script src="{% static "board/highcharts.js" %}"></script>
+                    <script>
+                        var chart = Highcharts.chart('container', {
+                            title: {
+                                text: null
+                            },
+                            xAxis: {
+                                type: 'datetime',
+                                minTickInterval: 1000 * 3600 * 24,
+                                dateTimeLabelFormats: {
+                                    day: '%Y-%m-%d',
+                                    month: '%y-%m',
+                                    year: '%Y'
+                                }
+                            },
+                            yAxis: {
+                                title: {
+                                    text: '分数'
+                                },
+                                tickPositioner: function () {
+                                    var all_positions = [0, 800, 1000, 1200, 1400, 1600, 1900, 2200, 2400]
+                                    var positions = []
+                                    for (var i = 1; i < all_positions.length - 1; i++) {
+                                        var pre = all_positions[i - 1]
+                                        var nxt = all_positions[i + 1]
+                                        var now = all_positions[i]
+                                        if (now < this.dataMax && nxt > this.dataMin ||
+                                            now > this.dataMin && pre < this.dataMax) {
+                                            positions.push(now)
+                                        }
+                                    }
+                                    return positions
+                                }
+                            },
+                            tooltip: {
+                                xDateFormat: '%Y-%m-%d'
+                            },
+                            series: [{
+                                name: 'rating',
+                                data: [{{ data }}],
+                                zones: [{
+                                    value: 1200,
+                                    color: '#808080'
+                                }, {
+                                    value: 1400,
+                                    color: '#008000'
+                                }, {
+                                    value: 1600,
+                                    color: '#03A89E'
+                                }, {
+                                    value: 1900,
+                                    color: '#0000ff'
+                                }, {
+                                    value: 2200,
+                                    color: '#a0a'
+                                }, {
+                                    value: 2400,
+                                    color: '#FF8C00'
+                                }, {
+                                    color: '#ff0000'
+                                }]
+                            }],
+                            plotOptions: {
+                                line: {
+                                    dataLabels: {
+                                        enabled: false
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                </div>
             {% else %}
-                <p>你还没有登录，请
-                    <button class="btn btn-default"><a href="{% url 'login' %}?next={{ request.path}}">登录</a></button>
-                    或者
-                    <button class="btn btn-default"><a href="{% url 'logreg:register' %}">注册</a></button>
-                </p>
+                <div class="my-5 pt-5 text-muted text-center">
+                    <a type="button" class="btn btn-primary  btn-lg" style="width: 30%" href="{% url 'login' %}?next={{ request.path}}">登录</a>
+                </div>
+                <div class="my-5 pt-5 text-muted text-center">
+                    <a type="button" class="btn btn-success  btn-lg" style="width: 30%; color: white" href="{% url 'logreg:register' %}">注册</a>
+                </div>
             {% endif %}
-        </div>
-    </div>
-</div>
-</body>
-</html>
+{% endblock %}
