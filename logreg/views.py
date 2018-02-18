@@ -145,12 +145,15 @@ def password_check(request):
 
 
 def index(request):
-    queryset = RatingChange.objects.filter(cf_user__handle=request.user.handle)
-    data = []
-    for change in queryset.filter(ratingUpdateTimeSeconds__isnull=False):
-        data.append([change.ratingUpdateTimeSeconds * 1000, change.newRating])
-    data = str(data)[1:-1]
-    return render(request, 'index.html', {'data': data})
+    if request.user.is_authenticated:
+        queryset = RatingChange.objects.filter(cf_user__handle=request.user.handle)
+        data = []
+        for change in queryset.filter(ratingUpdateTimeSeconds__isnull=False):
+           data.append([change.ratingUpdateTimeSeconds * 1000, change.newRating])
+        data = str(data)[1:-1]
+        return render(request, 'index.html', {'data': data})
+    else:
+        return render(request, 'index.html')
 
 
 def base(request):
