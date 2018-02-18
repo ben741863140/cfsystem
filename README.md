@@ -11,10 +11,13 @@ codeforces内部排行榜
 
 ----------
 ### 编写语言 ###
-> 1. Django
+> 1. Python
 > 2. HTML 5
-> 3. JQuery
-> 4. JS
+> 3. JS
+
+### 使用框架 ###
+> 1. Django
+> 2. JQuery
 
 ----------
 ### 各组件简介 ###
@@ -37,7 +40,7 @@ codeforces内部排行榜
 ----------
 ### 本系统编写者 ###
 
-犇渣渣 @ben741863140
+犇渣渣 [@ben741863140](https://github.com/ben741863140)
 
-Toshi @CToshi
+Toshi [@CToshi](https://github.com/CToshi)
 
