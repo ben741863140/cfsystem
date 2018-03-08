@@ -54,7 +54,10 @@ class AutoUpdate(threading.Thread):
             time.sleep(10 * 60)
 
     def ready(self):
-        if (get_farthest_update() - datetime.datetime.now()).seconds <= 60 * 30:
+        diff = datetime.datetime.now() - get_farthest_update()
+        if diff.days >= 1:
+            return True
+        if diff.seconds <= 60 * 30:
             return False
         self.update_setting.load_setting()
         diff = get_now_seconds() - self.update_setting.get_seconds()
@@ -81,5 +84,5 @@ def get_farthest_update():
 
 
 def auto_update():
-    if threading.active_count() == 1:
+    if threading.active_count() == 1:  # 防止多次启动（似乎不用）
         AutoUpdate().start()

@@ -1,9 +1,9 @@
-{% extends 'admin/index.html' %}
+{% extends 'superuser/index.html' %}
 {% load staticfiles %}
 {% block js %}
     <script src="{% static "bootstrap/js/popper.min.js" %}"></script>
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
-    <script src="{% static "admin/auto_update/set_auto_update.js" %}"></script>
+    <script src="{% static "superuser/auto_update/set_auto_update.js" %}"></script>
     {{ block.super }}
     <script>
         $(document).ready(function () {

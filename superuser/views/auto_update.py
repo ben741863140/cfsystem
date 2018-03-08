@@ -11,7 +11,7 @@ def set_auto_update(request):
         get['is_open'] = True if get['is_open'] == 'true' else False
         UpdateSetting(is_open=get['is_open'], hour=get['hour'], minute=get['minute']).write_setting()
         return JsonResponse({})
-    return render(request, 'admin/auto_update/set_auto_update.html')
+    return render(request, 'superuser/auto_update/set_auto_update.html')
 
 
 def get_config(request):
@@ -24,4 +24,4 @@ def get_config(request):
 
 
 def finished(request):
-    return render(request, 'admin/auto_update/finished.html')
+    return render(request, 'superuser/auto_update/finished.html')

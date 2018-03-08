@@ -7,7 +7,7 @@ from board.utility import get_rating
 def index(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
-    return render(request, 'admin/modify.html', {'users': CFUser.objects.all()})
+    return render(request, 'superuser/modify.html', {'users': CFUser.objects.all()})
 
 
 def del_cf_users(request):
@@ -17,7 +17,7 @@ def del_cf_users(request):
         redirect('/')
     for handle in request.POST.getlist('users[]'):
         CFUser.objects.filter(handle=handle).get().delete()
-    return render(request, 'admin/modify.html', {'users': CFUser.objects.all()})
+    return render(request, 'superuser/modify.html', {'users': CFUser.objects.all()})
 
 
 def _deal_list(text):  # not a view function
@@ -59,8 +59,8 @@ def list_add(request):
         for res in msg['results']:
             _update_cf_user(res)
         msg['results'].sort(key=lambda x: x['status'])
-        return render(request, 'admin/add_result.html', context=msg)
-    return render(request, 'admin/list_add.html')
+        return render(request, 'superuser/add_result.html', context=msg)
+    return render(request, 'superuser/list_add.html')
 
 
 def list_override(request):
@@ -79,8 +79,8 @@ def list_override(request):
         for res in msgs['results']:
             if res['status'] == 'OK' and res['handle'] not in deleted:
                 _update_cf_user(res)
-        return render(request, 'admin/add_result.html', context=msgs)
-    return render(request, 'admin/list_override.html')
+        return render(request, 'superuser/add_result.html', context=msgs)
+    return render(request, 'superuser/list_override.html')
 
 
 def get_user_info(line):

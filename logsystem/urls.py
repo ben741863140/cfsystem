@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'^logreg/', include('logreg.urls')),
     url(r'^logreg/', include('django.contrib.auth.urls')),
     url(r'^$', index, name='index'),
-    url(r'^admin/', include('admin.urls')),
+    url(r'^admin/', include('superuser.urls')),
     url(r'^ajax/yz/', yz, name='yz'),
     url(r'^ajax/yzm/', yzm, name='yzm'),
     url(r'^ajax/usercheck', usercheck, name='usercheck'),

@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.urls import path
 from .views import auto_update, index
-app_name = 'admin'
+app_name = 'superuser'
 
 urlpatterns = [
     url(r'^$', index.index),

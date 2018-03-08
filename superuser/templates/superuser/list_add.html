@@ -1,11 +1,11 @@
-{% extends 'admin/index.html' %}
+{% extends 'superuser/index.html' %}
 {% load staticfiles %}
 {% block js %}
     {{ block.super }}
     <script>
         $(document).ready(function () {
             $(".list-group-item").removeClass("active")
-            $('#element3').addClass('active')
+            $('#element2').addClass('active')
         })
     </script>
 {% endblock %}
@@ -17,9 +17,7 @@
         <form action="" method="post">
             {% csrf_token %}
             <textarea rows="20" name="list"
-                      style="height: 100%; width: 100%">在此输入姓名与cf账号，每一行一对姓名和cf帐号，格式随意（大概），姓名可以不写
-注：该操作会覆盖已有名单，即不在输入列表的帐号将会被删除
-            </textarea>
+                      style="height: 100%; width: 100%">在此输入姓名与cf账号，每一行一对姓名和cf帐号，格式随意（大概），姓名可以不写</textarea>
             <td align="center" style="border: 0px;">
                 <button type="submit" id="btn" class="btn btn-primary">提交</button>
             </td>
