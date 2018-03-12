@@ -3,14 +3,24 @@ from board.models import CFUser, RatingChange
 import datetime
 
 
-def update_rating():
-    for user in CFUser.objects.all():
-        res = utility.get_rating(user.handle)
+def update_rating(handle=''):
+    def update(cf_user):
+        res = utility.get_rating(cf_user.handle)
         if res['status'] != 'OK':
-            print('<update-rating> handle', user.handle, '不存在')
-            continue
-        user.rating = res['rating']
-        user.save()
+            print('<update-rating> handle', cf_user.handle, '不存在')
+            return
+        cf_user.rating = res['rating']
+        cf_user.save()
+
+    if handle:
+        update(CFUser.objects.filter(handle=handle).get())
+    else:
+        i = 0
+        size = CFUser.objects.count()
+        for user in CFUser.objects.all():
+            update(user)
+            i += 1
+            print('update rating [%d/%d]' % (i, size))
 
 
 def get_result_for_days(raw, *days_ago):
@@ -29,22 +39,34 @@ def get_result_for_days(raw, *days_ago):
     return res
 
 
-def update_rating_change():
+def update_rating_change(handle=''):
     days_ago = [180, 90, 30, 14]
-    for user in CFUser.objects.all():
-        result = utility.get_rating_change(user.handle)
-        queryset = RatingChange.objects.filter(cf_user__id=user.id)
+
+    def update(cf_user):
+        result = utility.get_rating_change(cf_user.handle)
+        queryset = RatingChange.objects.filter(cf_user__id=cf_user.id)
         for change in result:
-            if len(queryset.filter(ratingUpdateTimeSeconds=change['ratingUpdateTimeSeconds'])) == 0:
-                queryset.create(ratingUpdateTimeSeconds=change['ratingUpdateTimeSeconds'],
-                                oldRating=change['oldRating'],
-                                newRating=change['newRating'],
-                                cf_user_id=user.id)
+            queryset.get_or_create(ratingUpdateTimeSeconds=change['ratingUpdateTimeSeconds'],
+                                   defaults={
+                                       'oldRating': change['oldRating'],
+                                       'newRating': change['newRating'],
+                                       'cf_user_id': cf_user.id
+                                   })
         res = get_result_for_days(result, *days_ago)
         for day in days_ago:
             if len(queryset.filter(days_ago=day)) == 0:
-                RatingChange.objects.create(cf_user_id=user.id, days_ago=day)
+                RatingChange.objects.create(cf_user_id=cf_user.id, days_ago=day)
             rating_change = queryset.filter(days_ago=day).get()
             rating_change.oldRating = res[day]
             rating_change.newRating = res['newRating']
             rating_change.save()
+
+    if handle:
+        update(CFUser.objects.filter(handle=handle).get())
+    else:
+        i = 0
+        size = CFUser.objects.count()
+        for user in CFUser.objects.all():
+            update(user)
+            i += 1
+            print('update rating change [%d/%d]' % (i, size))

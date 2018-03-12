@@ -54,18 +54,14 @@ class AutoUpdate(threading.Thread):
             time.sleep(10 * 60)
 
     def ready(self):
-        if (get_farthest_update() - datetime.datetime.now()).seconds <= 60 * 30:
+        diff = datetime.datetime.now() - get_farthest_update()
+        if diff.days >= 1:
+            return True
+        if diff.seconds <= 60 * 30:
             return False
         self.update_setting.load_setting()
-        diff = self.update_setting.get_seconds() - get_now_seconds()
+        diff = get_now_seconds() - self.update_setting.get_seconds()
         return 0 <= diff <= 15 * 60
-        # if 0 <= diff <= 15 * 60:
-        #     return True
-        # if diff < 0:
-        #     diff += 24 * 3600
-        # minute = diff / 60 % 60
-        # hour = diff / 3600
-        # print('距离下次更新还有%d小时%d分钟' % (hour, minute))
 
     @staticmethod
     def update():
@@ -81,14 +77,12 @@ def get_now_seconds():
 
 
 def get_farthest_update():
-    print('in get_farthest_update --debug')
     _time = datetime.datetime.now()
     for user in CFUser.objects.all():
         _time = min(_time, user.last_update)
-    print('out get_farthest_update --debug')
     return _time
 
 
 def auto_update():
-    if threading.active_count() == 1:
+    if threading.active_count() == 1:  # 防止多次启动（似乎不用）
         AutoUpdate().start()
