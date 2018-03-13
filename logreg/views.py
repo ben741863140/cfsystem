@@ -138,7 +138,7 @@ def yz2(request):
         random.seed()
         captcha = ""
         for temp in range(0, 6):
-            cap += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
+            captcha += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
         mes = str('Your handle is being linked to the SCAU_CFsystem. The verify code is ' + str(
             captcha) + '. If the operator is not yourself, please ignore this message.')
         # print(cap)
