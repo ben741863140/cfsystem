@@ -75,16 +75,16 @@
                 url:"/ajax/yz/",
                 data:{"hand":handle},
                 success: function(ret){
-                    $('#okay').html(ret.result)
-                    $('#reg').removeAttr('disabled')
+                    $('#okay').html(ret.result);
+                    $('#reg').removeAttr('disabled');
                 }
               })
               //启动计时器，倒计时time秒后自动关闭计时器。
             var index = setInterval(function(){
             time--;
-            $('#yz').html('验证('+time+'秒)')
+            $('#yz').html('验证('+time+'秒)');
             if (time == 0) {
-                $('#yz').html('重新获取')
+                $('#yz').html('重新获取');
                 clearInterval(index);
             }
             }, 1000);
@@ -116,9 +116,14 @@
       $('#yzm').focus();
       $('#yzm').keyup(function () {
           var tex = $('#yzm').val();
+          {% for field in form %}
+          {% if field.html_name == 'handle'%}
+              var hand = $('#{{ field.auto_id }}').val();
+          {% endif %}
+          {% endfor %}
           var cap ="";
           var flag = false;
-          $.get('/ajax/yzm/',function (ret) {
+          $.get('/ajax/yzm/',{'hand':hand},function (ret) {
               for (var i=0; i< ret.length; ++i)
                   cap += ret[i];
               if(cap == "") flag=false

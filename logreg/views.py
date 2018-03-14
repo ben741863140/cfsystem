@@ -10,7 +10,8 @@ from logreg.models import User
 from board.models import RatingChange, CFUser
 from board.update import update_rating, update_rating_change
 
-cap = ""
+
+cap = dict()
 
 
 @csrf_exempt
@@ -24,7 +25,13 @@ def register(request):
     if request.is_ajax() == False and request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            if str(request.POST.get('yzm')) == str(cap):
+            captcha = ""
+            try:
+                captcha = cap[request.POST.get('handle')]
+            except KeyError:
+                captcha = ".++++"
+            if str(request.POST.get('yzm')) == str(captcha):
+                print('captcha pass')
                 form.save()
                 handle = form.cleaned_data['handle']
                 realname = form.cleaned_data['realname']
@@ -53,20 +60,27 @@ def yz(request):
         hand = str(request.POST.get('hand'))
         # print(hand)
         random.seed()
-        cap = ""
+        captcha = ""
         for temp in range(0, 6):
-            cap += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
+            captcha += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
         mes = str('Your handle is being linked to the SCAU_CFsystem. The verify code is ' + str(
-            cap) + '. If the operator is not yourself, please ignore this message.')
+            captcha) + '. If the operator is not yourself, please ignore this message.')
         # print(cap)
         send_message(str(hand), mes)
+        cap[hand] = captcha
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 
 @csrf_exempt
 def yzm(request):
     global cap
-    return HttpResponse(cap)
+    try:
+        captcha = str(cap[request.GET.get('hand')])
+    except KeyError:
+        captcha = ""
+    print(captcha)
+    print(request.GET.get('hand'))
+    return HttpResponse(captcha)
 
 
 @csrf_exempt
@@ -115,21 +129,21 @@ def user_exist(request):
 def yz2(request):
     global cap
     if request.is_ajax():
-        return_json = {
-            'result': '已发送验证码到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，打开对话版块查看验证码(PS:当CF有比赛进行的时候，本系统不会发出验证码，届时请耐心等待比赛结束)'}
+        return_json = {'result': '已发送验证码到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，打开对话版块查看验证码(PS:当CF有比赛进行的时候，本系统不会发出验证码，届时请耐心等待比赛结束)'}
         tex = str(request.POST.get('tex'))
         # print(tex)
         for user in User.objects.filter(username=tex):
             hand = user.handle
         # print(hand)
         random.seed()
-        cap = ""
+        captcha = ""
         for temp in range(0, 6):
-            cap += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
+            captcha += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
         mes = str('Your handle is being linked to the SCAU_CFsystem. The verify code is ' + str(
-            cap) + '. If the operator is not yourself, please ignore this message.')
+            captcha) + '. If the operator is not yourself, please ignore this message.')
         # print(cap)
         send_message(str(hand), mes)
+        cap[str(hand)] = str(captcha)
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 
@@ -161,7 +175,3 @@ def index(request):
         return render(request, 'index.html', {'data': data})
     else:
         return render(request, 'index.html')
-
-
-def base(request):
-    return render(request, 'base.html')
