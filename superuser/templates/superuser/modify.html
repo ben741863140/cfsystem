@@ -1,36 +1,42 @@
-{% extends 'superuser/index.html' %}
+{% extends 'superuser/list_tab.html' %}
 {% load staticfiles %}
 {% block js %}
     {{ block.super }}
-    <script src="{% static '/superuser/index.js' %}"></script>
+    <script src="{% static '/superuser/modify.js' %}"></script>
 {% endblock %}
 {% block content %}
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">CF帐号</th>
-            <th scope="col">姓名</th>
-            <th scope="col">分数</th>
+            <th scope="col">#</th>
+            <th scope="col">名称</th>
+            <th scope="col">类型</th>
         </tr>
         </thead>
         <tbody>
-        {% for user in users %}
-            <tr class="element">
-                <th scope="row" class="handle">{{ user.handle }}</th>
-                <td>{{ user.realname }}</td>
-                <td>{{ user.rating }}</td>
+        {% for board in boards %}
+            <tr class="element" id="board{{ board.id }}">
+                <th scope="row">{{ board.index }}</th>
+                <td>{{ board.name }}</td>
+                <td>{{ board.type }}</td>
+                <td>
+                    <button class="btn btn-primary">编辑</button>
+                </td>
+                <td>
+                    <button class="btn btn-primary delete">删除</button>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-{% endblock %}
-{% block second_row %}
-    <div class="row">
-        <div class="col-5"></div>
-        <div class="col-4">
-        </div>
-        <div class="col-3">
-            <button id="btn" class="btn btn-primary">删除</button>
-        </div>
-    </div>
+    <table class="table">
+        <tbody>
+        <td align="center" style="border:0px;">
+            <a class="btn btn-primary" href="board/create">创建新排行榜</a>
+        </td>
+        <td align="center" style="border:0px;">
+            <button type="submit" class="btn btn-primary" id="btn_delete_all">删除所有标记项</button>
+        </td>
+        </tbody>
+    </table>
 {% endblock %}

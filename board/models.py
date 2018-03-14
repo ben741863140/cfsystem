@@ -18,3 +18,25 @@ class RatingChange(models.Model):
     newRating = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
     ratingUpdateTimeSeconds = models.IntegerField(null=True)
+
+
+class Board(models.Model):
+    cf_user = models.ManyToManyField(CFUser)
+
+
+# class DynamicBoard(Board): # 暂时不加
+#     days_ago = models.IntegerField()
+
+
+class StaticBoard(Board):
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+
+
+class RatingStaticBoard(StaticBoard):
+    rating = models.IntegerField()
+
+
+class RatingChangeStaticBoard(StaticBoard):
+    old_rating = models.IntegerField()
+    new_rating = models.IntegerField()

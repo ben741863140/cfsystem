@@ -1,13 +1,19 @@
 from django.shortcuts import render, redirect
-from board.models import CFUser
+from board.models import CFUser, Board
 import re
 from board.utility import get_rating
 
 
-def index(request):
+def modify(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
-    return render(request, 'superuser/modify.html', {'users': CFUser.objects.all()})
+    boards = [{'id': '1', 'name': '233', 'type': '静态榜'}, {'id': '2', 'name': '244', 'type': '静态榜'}]
+    # print(boards)
+    return render(request, 'superuser/modify.html', {'boards': boards})
+
+
+def create_board(request):
+    return render(request, 'superuser/create_board.html', {})
 
 
 def del_cf_users(request):
@@ -38,7 +44,7 @@ def _deal_list(text):  # not a view function
     return {'results': results, 'handles': visit}
 
 
-def _update_cf_user(res): #not a view
+def _update_cf_user(res):  # not a view
     if res['status'] != 'OK':
         return
     if len(CFUser.objects.filter(handle=res['handle'])) == 0:

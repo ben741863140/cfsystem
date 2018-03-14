@@ -43,6 +43,7 @@ class AutoUpdate(threading.Thread):
         threading.Thread.__init__(self)
         self._keep_run = True
         self.update_setting = UpdateSetting()
+        self.daemon = True
 
     def stop(self):
         self._keep_run = False
@@ -55,12 +56,15 @@ class AutoUpdate(threading.Thread):
 
     def ready(self):
         diff = datetime.datetime.now() - get_farthest_update()
+        print('days', diff.days)
         if diff.days >= 1:
             return True
+        print('seconds', diff.seconds)
         if diff.seconds <= 60 * 30:
             return False
         self.update_setting.load_setting()
         diff = get_now_seconds() - self.update_setting.get_seconds()
+        print('diff', diff)
         return 0 <= diff <= 15 * 60
 
     @staticmethod

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block js %}
+{#    <script>#}
+{#        $(document).ready(function () {#}
+{#            $('.nav-link').removeClass('active')#}
+{#            $('#nav-element1').addClass('active')#}
+{#        })#}
+{#    </script>#}
+{% endblock %}
+{% block index %}
+    {% csrf_token %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-2">
+                <div class="list-group" id="list-tab" role="tablist">
+                    <a class="list-group-item list-group-item-action active" data-toggle="list"
+                       href="/admin" role="tab" aria-controls="home" id="element1">编辑排行榜</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list"
+                       href="/admin/set_auto_update" role="tab" aria-controls="messages" id="element2">设置自动更新</a>
+                </div>
+            </div>
+            <div class="col">
+                {% block content %}
+                {% endblock %}
+            </div>
+            <div class="col-2">
+            </div>
+        </div>
+    </div>
+{% endblock %}

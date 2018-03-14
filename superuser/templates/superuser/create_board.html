@@ -1,0 +1,39 @@
+{% extends 'superuser/list_tab.html' %}
+{% load staticfiles %}
+{% block js %}
+    {#    <link rel="stylesheet" type="text/css" href="{% static "js/jquery-ui.min.css" %}">#}
+    {#    <script src="{% static "js/jquery-ui.min.js" %}"></script>#}
+{#    <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-datepicker.css" %}">#}
+{#    <script src="{% static "/js/bootstrap-datepicker.js" %}"></script>#}
+{#    <script>#}
+{#        $(document).ready(function () {#}
+{#            $("#datepicker").datepicker();#}
+{#            $('.input-daterange input').each(function () {#}
+{#                $(this).datepicker('clearDates');#}
+{#            });#}
+{#        })#}
+{#    </script>#}
+{% endblock %}
+{% block content %}
+    日期：<input type="date">时间：<input type="time">
+    <form>
+        <div class="form-group">
+            <label>名称</label>
+            <input type="text" class="form-control">
+            <label>类型</label>
+            <select class="form-control">
+                <option>静态榜</option>
+                <option>动态榜</option>
+            </select>
+            <label>名单导入</label>
+            <textarea class="form-control" rows="15"></textarea>
+        </div>
+    </form>
+    <table class="table">
+        <tbody>
+        <td align="center" style="border:0px;">
+            <button class="btn btn-primary" id="btn_create">创建</button>
+        </td>
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,16 +1,17 @@
 from django.conf.urls import url
 from django.urls import path
-from .views import auto_update, index
+from .views import auto_update, superuser_views
 app_name = 'superuser'
 
 urlpatterns = [
-    url(r'^$', index.index),
+    url(r'^$', superuser_views.modify),
     path(r'get_config', auto_update.get_config, name='get_config'),
     path(r'set_auto_update', auto_update.set_auto_update, name='set_auto_update'),
     url(r'finished', auto_update.finished),
-    url(r'del_cf_users', index.del_cf_users),
-    url(r'list_add', index.list_add),
-    url(r'list_override', index.list_override),
+    url(r'del_cf_users', superuser_views.del_cf_users),
+    url(r'list_add', superuser_views.list_add),
+    url(r'list_override', superuser_views.list_override),
+    url(r'board/create', superuser_views.create_board),
 
 
 ]
