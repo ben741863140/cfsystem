@@ -7,6 +7,9 @@ $(document).ready(function () {
             father.css('text-decoration', 'none')
         }
     })
+    $('#btn_delete_all').bind('click', function () {
+        
+    })
     // $('#btn').bind('click', function () {
     //     var users = []
     //     $('.handle').each(function () {

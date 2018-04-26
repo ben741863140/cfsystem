@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
-from board.models import CFUser, Board
-import re
+from board.models import CFUser
+import re, datetime
 from board.utility import get_rating
+from superuser.forms import StaticBoardForm
+from board.models import Board, BoardItem
+from board.utility import get_rating_change
 
 
 def modify(request):
@@ -9,11 +12,57 @@ def modify(request):
         return redirect('/')
     boards = [{'id': '1', 'name': '233', 'type': '静态榜'}, {'id': '2', 'name': '244', 'type': '静态榜'}]
     # print(boards)
-    return render(request, 'superuser/modify.html', {'boards': boards})
+    return render(request, 'superuser/modify.html', {'boards': Board.objects.all()})
+
+
+def _get_max_rating(rating_changes, start_time, end_time):
+    max_rating = 0
+    for change in rating_changes:
+        time = datetime.datetime.fromtimestamp(change['ratingUpdateTimeSeconds'])
+        if start_time <= time < end_time:
+            max_rating = max(max_rating, change['newRating'])
+    return max_rating
 
 
 def create_board(request):
-    return render(request, 'superuser/create_board.html', {})
+    form = StaticBoardForm()
+    if request.method == 'POST':
+        form = StaticBoardForm(request.POST)
+        print(form.data)
+        if form.is_valid():
+            results = _deal_list(form.cleaned_data.get('list_text'))['results']
+            print(results)
+            clean_data = form.cleaned_data
+            if not clean_data['effective_time']:
+                clean_data['effective_time'] = datetime.datetime.fromtimestamp(100000)
+            board = Board(name=clean_data['name'], effective_time=clean_data['effective_time'],
+                          start_time=clean_data['start_time'],
+                          end_time=clean_data['end_time'], type=clean_data['type'])
+            board.save()
+            for msg in results:
+                if msg['status'] != 'OK':
+                    continue
+                cf_user = CFUser.objects.get_or_create(handle=msg['handle'])[0]
+                cf_user.realname = msg['realname']
+                cf_user.rating = msg['rating']
+                cf_user.save()
+                board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, oldRating=0)
+                rating_changes = get_rating_change(msg['handle'])
+                board_item.max_rating = _get_max_rating(rating_changes, board.start_time, board.end_time)
+                board_item.oldRating = _get_max_rating(rating_changes, board.effective_time, board.start_time)
+                board_item.save()
+        return render(request, 'superuser/import_result.html', {'results': results})
+    return render(request, 'superuser/create_board_form.html', {'form': form})
+    # if request.method == 'POST':
+    #     print(request.POST)
+    #     form = StaticBoardForm(request.POST)
+    #     errors = {}
+    #     form.is_valid()
+    #     for field in form:
+    #         errors[field.name] = field.errors
+    #         print(field.name, field.errors)
+    #     return render(request, 'superuser/create_board.html', {'initial': request.POST, 'errors': errors})
+    # return render(request, 'superuser/create_board.html', {})
 
 
 def del_cf_users(request):
@@ -92,15 +141,16 @@ def list_override(request):
 def get_user_info(line):
     handle = re.findall(re.compile(r'[0-9a-zA-Z_]{3,24}'), line)
     realname = re.findall(re.compile(r'[\u4e00-\u9fa5]{2,3}'), line)
-    if len(handle) == 0 or len(handle) > 1 or len(realname) > 1:
+    if len(handle) != 1 or len(realname) > 1:
         return {'status': 'FAILED', 'comment': '无法识别'}
     if len(realname) == 0:
         realname.append('')
     handle = handle[0].lower()
-    res = {'realname': realname[0], 'handle': handle}
+    realname = realname[0]
+    res = {'realname': realname, 'handle': handle}
     if len(CFUser.objects.filter(handle=handle)) != 0:
         res['rating'] = CFUser.objects.filter(handle=handle).get().rating
         res['status'] = 'OK'
         return res
-    res.update(get_rating(handle[0]))
+    res.update(get_rating(handle))
     return res

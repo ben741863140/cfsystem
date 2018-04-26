@@ -1,0 +1,30 @@
+{% extends 'superuser/list_tab.html' %}
+{% load staticfiles %}
+{% block js %}
+    {{ block.super }}
+    <script src="{% static '/superuser/modify.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">导入信息</th>
+            <th scope="col">handle</th>
+            <th scope="col">realname</th>
+            <th scope="col">导入状态</th>
+            <th scope="col">备注</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for info in results %}
+            <tr>
+                <th scope="row">{{ info.text }}</th>
+                <td>{{ info.handle }}</td>
+                <td>{{ info.realname }}</td>
+                <td>{{ info.status }}</td>
+                <td>{{ info.comment }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -21,22 +21,16 @@ class RatingChange(models.Model):
 
 
 class Board(models.Model):
-    cf_user = models.ManyToManyField(CFUser)
-
-
-# class DynamicBoard(Board): # 暂时不加
-#     days_ago = models.IntegerField()
-
-
-class StaticBoard(Board):
+    name = models.CharField(max_length=20)
+    effective_time = models.DateTimeField(default=0)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
+    type = models.CharField(max_length=20)
 
 
-class RatingStaticBoard(StaticBoard):
-    rating = models.IntegerField()
-
-
-class RatingChangeStaticBoard(StaticBoard):
-    old_rating = models.IntegerField()
-    new_rating = models.IntegerField()
+class BoardItem(models.Model):
+    cf_user = models.ForeignKey(CFUser, on_delete=models.PROTECT)
+    board = models.ForeignKey(Board, on_delete=models.CASCADE)
+    max_rating = models.IntegerField()
+    oldRating = models.IntegerField()
+    last_update = models.DateTimeField(auto_now=True)

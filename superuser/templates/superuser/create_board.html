@@ -1,39 +1,33 @@
 {% extends 'superuser/list_tab.html' %}
 {% load staticfiles %}
 {% block js %}
-    {#    <link rel="stylesheet" type="text/css" href="{% static "js/jquery-ui.min.css" %}">#}
-    {#    <script src="{% static "js/jquery-ui.min.js" %}"></script>#}
-{#    <link rel="stylesheet" type="text/css" href="{% static "css/bootstrap-datepicker.css" %}">#}
-{#    <script src="{% static "/js/bootstrap-datepicker.js" %}"></script>#}
-{#    <script>#}
-{#        $(document).ready(function () {#}
-{#            $("#datepicker").datepicker();#}
-{#            $('.input-daterange input').each(function () {#}
-{#                $(this).datepicker('clearDates');#}
-{#            });#}
-{#        })#}
-{#    </script>#}
 {% endblock %}
 {% block content %}
-    日期：<input type="date">时间：<input type="time">
-    <form>
+    <form method="post" action="">
+        {% csrf_token %}
         <div class="form-group">
             <label>名称</label>
-            <input type="text" class="form-control">
+            <input type="text" class="form-control" name="name" value="{{ initial.name }}">
+            {{ errors.name }}
             <label>类型</label>
-            <select class="form-control">
+            <select class="form-control" disabled="disabled">
                 <option>静态榜</option>
                 <option>动态榜</option>
             </select>
+            开始时间：<input type="datetime-local" name="start_time" value="{{ initial.start_time }}">
+            {{ errors.start_time }}
+            截止时间：<input type="datetime-local" name="end_time" value="{{ initial.end_time }}">
+            {{ errors.end_time }}
+            <br/>
             <label>名单导入</label>
-            <textarea class="form-control" rows="15"></textarea>
+            <textarea class="form-control" rows="15" name="list_text" >{{ initial.list_text }}</textarea>
         </div>
+        <table class="table">
+            <tbody>
+            <td align="center" style="border:0px;">
+                <button class="btn btn-primary" id="btn_create" type="submit">创建</button>
+            </td>
+            </tbody>
+        </table>
     </form>
-    <table class="table">
-        <tbody>
-        <td align="center" style="border:0px;">
-            <button class="btn btn-primary" id="btn_create">创建</button>
-        </td>
-        </tbody>
-    </table>
 {% endblock %}

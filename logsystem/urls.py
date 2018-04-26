@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from logreg.views import index, yz, yzm, usercheck, user_exist, password_check, yz2
-
 urlpatterns = [
     url(r'^board/', include('board.urls')),
     url(r'^logreg/', include('logreg.urls')),
@@ -28,4 +27,5 @@ urlpatterns = [
     url(r'^ajax/user_exist', user_exist, name='user_exist'),
     url(r'^ajax/password_check', password_check, name='password_check'),
     url(r'^ajax/yz2/', yz2, name='yz2'),
+
 ]

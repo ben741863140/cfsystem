@@ -1,0 +1,25 @@
+{% extends 'superuser/list_tab.html' %}
+{% load staticfiles %}
+{% block js %}
+{% endblock %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {% for field in form %}
+                <div>
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+        </div>
+        <table class="table">
+            <tbody>
+            <td align="center" style="border:0px;">
+                <button class="btn btn-primary" id="btn_create" type="submit">创建</button>
+            </td>
+            </tbody>
+        </table>
+    </form>
+{% endblock %}

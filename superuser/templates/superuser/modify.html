@@ -8,17 +8,21 @@
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">#</th>
+            <th scope="col">ID</th>
             <th scope="col">名称</th>
             <th scope="col">类型</th>
+            <th scope="col">开始时间</th>
+            <th scope="col">结束时间</th>
         </tr>
         </thead>
         <tbody>
         {% for board in boards %}
             <tr class="element" id="board{{ board.id }}">
-                <th scope="row">{{ board.index }}</th>
+                <th scope="row">{{ board.id }}</th>
                 <td>{{ board.name }}</td>
                 <td>{{ board.type }}</td>
+                <td>{{ board.start_time }}</td>
+                <td>{{ board.end_time }}</td>
                 <td>
                     <button class="btn btn-primary">编辑</button>
                 </td>
