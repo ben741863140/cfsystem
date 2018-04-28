@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 {% block js %}
-{#    <script>#}
-{#        $(document).ready(function () {#}
-{#            $('.nav-link').removeClass('active')#}
-{#            $('#nav-element1').addClass('active')#}
-{#        })#}
-{#    </script>#}
+    <script>
+        $(document).ready(function () {
+            $('.nav-link').removeClass('active')
+            $('#nav-element3').addClass('active')
+        })
+    </script>
 {% endblock %}
 {% block index %}
     {% csrf_token %}

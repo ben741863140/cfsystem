@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from board.models import CFUser, RatingChange
 from board.auto_update import auto_update
+from board.models import Board, BoardItem
 
 
 def board_rating(request):
