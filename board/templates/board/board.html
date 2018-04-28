@@ -29,11 +29,9 @@
                         选择排行榜
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="/board">分数排行榜</a>
-                        <a class="dropdown-item" href="14">近两周升级榜</a>
-                        <a class="dropdown-item" href="30">近一月升级榜</a>
-                        <a class="dropdown-item" href="90">近三月升级榜</a>
-                        <a class="dropdown-item" href="180">近半年升级榜</a>
+                        {% for board in boards %}
+                            <a class="dropdown-item" href={{ board.id }}>{{ board.name }}</a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
