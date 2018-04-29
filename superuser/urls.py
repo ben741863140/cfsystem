@@ -12,6 +12,6 @@ urlpatterns = [
     url(r'list_add', superuser_views.list_add),
     url(r'list_override', superuser_views.list_override),
     url(r'board/create', superuser_views.create_board),
-
+    path('delete_board', superuser_views.delete_board)
 
 ]

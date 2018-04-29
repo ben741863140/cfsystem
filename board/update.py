@@ -1,5 +1,6 @@
 from board import utility
 from board.models import CFUser, RatingChange
+from .models import Board
 import datetime
 
 
@@ -70,3 +71,26 @@ def update_rating_change(handle=''):
             update(user)
             i += 1
             print('update rating change [%d/%d]' % (i, size))
+
+
+def _get_max_rating(handle, start_time, end_time):  # 使用RatingChange得到期间内最高rating
+    max_rating = 0
+    for rc in RatingChange.objects.filter(cf_user__handle=handle).all():
+        time = datetime.datetime.fromtimestamp(rc.ratingUpdateTimeSeconds)
+        if start_time <= time < end_time:
+            max_rating = max(max_rating, rc.newRating)
+    return max_rating
+
+
+def update_board(board_id=-1):  # -1表示更新所有Board
+    if board_id == -1:
+        for board in Board.objects.all():
+            update_board(board.id)
+        return
+    board = Board.objects.filter(id=board_id).get()
+    for item in board.boarditem_set.all():
+        item.max_rating = _get_max_rating(item.cf_user.handle, board.start_time, board.end_time)
+        item.old_rating = _get_max_rating(item.cf_user.handle, datetime.datetime.fromtimestamp(100000),
+                                          board.start_time)
+        if item.old_rating == 0:
+            item.old_rating = 1500

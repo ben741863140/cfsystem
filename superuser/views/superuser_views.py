@@ -10,8 +10,6 @@ from board.utility import get_rating_change
 def modify(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
-    boards = [{'id': '1', 'name': '233', 'type': '静态榜'}, {'id': '2', 'name': '244', 'type': '静态榜'}]
-    # print(boards)
     return render(request, 'superuser/modify.html', {'boards': Board.objects.all()})
 
 
@@ -33,9 +31,7 @@ def create_board(request):
             results = _deal_list(form.cleaned_data.get('list_text'))['results']
             print(results)
             clean_data = form.cleaned_data
-            if not clean_data['effective_time']:
-                clean_data['effective_time'] = datetime.datetime.fromtimestamp(100000)
-            board = Board(name=clean_data['name'], effective_time=clean_data['effective_time'],
+            board = Board(name=clean_data['name'],
                           start_time=clean_data['start_time'],
                           end_time=clean_data['end_time'], type=clean_data['type'])
             board.save()
@@ -46,23 +42,26 @@ def create_board(request):
                 cf_user.realname = msg['realname']
                 cf_user.rating = msg['rating']
                 cf_user.save()
-                board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, oldRating=0)
+                board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, old_rating=0)
                 rating_changes = get_rating_change(msg['handle'])
                 board_item.max_rating = _get_max_rating(rating_changes, board.start_time, board.end_time)
-                board_item.oldRating = _get_max_rating(rating_changes, board.effective_time, board.start_time)
+                board_item.old_rating = _get_max_rating(rating_changes, datetime.datetime.fromtimestamp(100000),
+                                                        board.start_time)
+                if board_item.old_rating == 0:
+                    board_item.old_rating = 1500
                 board_item.save()
         return render(request, 'superuser/import_result.html', {'results': results})
     return render(request, 'superuser/create_board_form.html', {'form': form})
-    # if request.method == 'POST':
-    #     print(request.POST)
-    #     form = StaticBoardForm(request.POST)
-    #     errors = {}
-    #     form.is_valid()
-    #     for field in form:
-    #         errors[field.name] = field.errors
-    #         print(field.name, field.errors)
-    #     return render(request, 'superuser/create_board.html', {'initial': request.POST, 'errors': errors})
-    # return render(request, 'superuser/create_board.html', {})
+
+
+def delete_board(request):
+    if request.is_ajax() and request.user.is_authenticated and request.user.is_superuser and request.method == 'POST':
+        ids = request.POST.getlist('ids[]')
+        for ID in ids:
+            Board.objects.filter(id=ID).delete()
+            print('删除id为', ID, '的榜单')
+        return render(request, 'superuser/modify.html', {'boards': Board.objects.all()})
+    return redirect('/')
 
 
 def del_cf_users(request):

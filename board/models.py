@@ -22,7 +22,6 @@ class RatingChange(models.Model):
 
 class Board(models.Model):
     name = models.CharField(max_length=20)
-    effective_time = models.DateTimeField(default=0)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     type = models.CharField(max_length=20)
@@ -32,5 +31,5 @@ class BoardItem(models.Model):
     cf_user = models.ForeignKey(CFUser, on_delete=models.PROTECT)
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     max_rating = models.IntegerField()
-    oldRating = models.IntegerField()
+    old_rating = models.IntegerField()
     last_update = models.DateTimeField(auto_now=True)

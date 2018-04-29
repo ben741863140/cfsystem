@@ -18,8 +18,6 @@ class StaticBoardForm(forms.Form):
 
     name = forms.CharField(label='名称', min_length=2, max_length=20,
                            widget=forms.TextInput(attrs={'class': 'form-control'}))
-    effective_time = forms.DateTimeField(label='有效起始时间', widget=DateTimeInput(attrs={'type': 'datetime-local'}),
-                                         input_formats=['%Y-%m-%dT%H:%M'], required=False)
     start_time = forms.DateTimeField(label='开始时间', widget=DateTimeInput(attrs={'type': 'datetime-local'}),
                                      input_formats=['%Y-%m-%dT%H:%M'])
     end_time = forms.DateTimeField(label='结束时间', widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),

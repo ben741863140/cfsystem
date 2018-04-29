@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% block js %}
     {{ block.super }}
-    <script src="{% static '/superuser/modify.js' %}"></script>
+    <script src="{% static '/superuser/board_modify.js' %}"></script>
 {% endblock %}
 {% block content %}
     <table class="table">
@@ -17,17 +17,17 @@
         </thead>
         <tbody>
         {% for board in boards %}
-            <tr class="element" id="board{{ board.id }}">
+            <tr class="element">
                 <th scope="row">{{ board.id }}</th>
                 <td>{{ board.name }}</td>
                 <td>{{ board.type }}</td>
                 <td>{{ board.start_time }}</td>
                 <td>{{ board.end_time }}</td>
                 <td>
-                    <button class="btn btn-primary">编辑</button>
+                    <button class="btn btn-primary" disabled="disabled">编辑</button>
                 </td>
                 <td>
-                    <button class="btn btn-primary delete">删除</button>
+                    <button class="btn btn-primary delete" id="board{{ board.id }}">删除</button>
                 </td>
             </tr>
         {% endfor %}
