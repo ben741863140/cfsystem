@@ -6,6 +6,6 @@ app_name = 'board'
 
 urlpatterns = [
     path('', board_rating),
-    path('<int:id>/', board_rating),
+    path('<int:board_id>/', board_rating, name='board_view'),
     path('profile/<int:handle>/', board_rating_change),
 ]

@@ -30,7 +30,7 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         {% for board in boards %}
-                            <a class="dropdown-item" href={{ board.id }}>{{ board.name }}</a>
+                            <a class="dropdown-item" href='{% url 'board:board_view' board.id %}'>{{ board.name }}</a>
                         {% endfor %}
                     </div>
                 </div>
