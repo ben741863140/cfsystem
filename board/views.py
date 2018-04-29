@@ -9,27 +9,41 @@ def board_rating(request, board_id=-1):
         class User:
             rank = rating = handle = oldRating = newRating = change = 0
             realname = ''
-
+        class User2:
+            rank = rating = handle = 0
+            realname = ''
         users = []
         if board_id == -1:
             board_id = Board.objects.order_by('id').first().id
         time = Board.objects.filter(id=board_id).get().name
-        for rc in BoardItem.objects.filter(board=Board.objects.filter(id=board_id).get()):
-            user = User()
-            user.change = rc.max_rating - rc.old_rating
-            if user.change <= 0:
-                continue
-            user.handle = rc.cf_user.handle
-            user.oldRating = rc.old_rating
-            user.newRating = rc.max_rating
-            user.realname = rc.cf_user.realname
-            users.append(user)
-        users.sort(key=lambda x: x.change, reverse=True)
-        for i in range(len(users)):
-            users[i].rank = i + 1
-            users[i].change = '+' + str(users[i].change)
-        return render(request, 'board/board_upgrade.html',
-                      {'users': users, 'time': time, 'boards': Board.objects.all()})
+        if str("rating") == str(Board.objects.filter(id=board_id).get().type):
+            for rc in BoardItem.objects.filter(board=Board.objects.filter(id=board_id).get()):
+                info = User2()
+                info.rating = rc.max_rating
+                info.handle = rc.cf_user.handle
+                info.realname = rc.cf_user.realname
+                users.append(info)
+            users.sort(key=lambda x: x.rating, reverse=True)
+            for i in range(len(users)):
+                users[i].rank = i + 1
+            return render(request, 'board/board_rating.html', {'users': users, 'time':time, 'boards': Board.objects.all()})
+        else:
+            for rc in BoardItem.objects.filter(board=Board.objects.filter(id=board_id).get()):
+                user = User()
+                user.change = rc.max_rating - rc.old_rating
+                if user.change <= 0:
+                    continue
+                user.handle = rc.cf_user.handle
+                user.oldRating = rc.old_rating
+                user.newRating = rc.max_rating
+                user.realname = rc.cf_user.realname
+                users.append(user)
+            users.sort(key=lambda x: x.change, reverse=True)
+            for i in range(len(users)):
+                users[i].rank = i + 1
+                users[i].change = '+' + str(users[i].change)
+            return render(request, 'board/board_upgrade.html',
+                          {'users': users, 'time': time, 'boards': Board.objects.all()})
     else:
         return render(request, 'index.html')
 

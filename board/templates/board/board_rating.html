@@ -1,4 +1,7 @@
 {% extends 'board/board.html' %}
+{% block title %}
+    {{ time }}排行榜
+{% endblock %}
 {% block content %}
     {% for user in users %}
         <tr>
