@@ -1,6 +1,7 @@
 from django.http import JsonResponse, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.shortcuts import render
-from board.auto_update import UpdateSetting
+from board.auto_update import UpdateSetting, AutoUpdate
 
 
 def set_auto_update(request):
@@ -25,3 +26,9 @@ def get_config(request):
 
 def finished(request):
     return render(request, 'superuser/auto_update/finished.html')
+
+
+def manual_update(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        AutoUpdate.update()
+    return redirect('/admin')

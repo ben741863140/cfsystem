@@ -24,25 +24,23 @@ def update_rating(handle=''):
             print('update rating [%d/%d]' % (i, size))
 
 
-def get_result_for_days(raw, *days_ago):
-    res = {}
-    now_rating = 0
-    for info in raw:
-        now_rating = info['newRating']
-        update_time = datetime.datetime.fromtimestamp(info['ratingUpdateTimeSeconds'])
-        # 得到的results['result']是按时间轴从以前到现在，所以遇到第一个满足条件的就是oldRating，只写进一次
-        for day in filter(lambda x: x if x not in res.keys() else None, days_ago):
-            if (datetime.datetime.now() - update_time).days <= day:
-                res[day] = info['oldRating']
-    res['newRating'] = now_rating
-    for day in filter(lambda x: x if x not in res.keys() else None, days_ago):
-        res[day] = now_rating
-    return res
+# def get_result_for_days(raw, *days_ago):
+#     res = {}
+#     now_rating = 0
+#     for info in raw:
+#         now_rating = info['newRating']
+#         update_time = datetime.datetime.fromtimestamp(info['ratingUpdateTimeSeconds'])
+#         # 得到的results['result']是按时间轴从以前到现在，所以遇到第一个满足条件的就是oldRating，只写进一次
+#         for day in filter(lambda x: x if x not in res.keys() else None, days_ago):
+#             if (datetime.datetime.now() - update_time).days <= day:
+#                 res[day] = info['oldRating']
+#     res['newRating'] = now_rating
+#     for day in filter(lambda x: x if x not in res.keys() else None, days_ago):
+#         res[day] = now_rating
+#     return res
 
 
 def update_rating_change(handle=''):
-    days_ago = [180, 90, 30, 14]
-
     def update(cf_user):
         result = utility.get_rating_change(cf_user.handle)
         queryset = RatingChange.objects.filter(cf_user__id=cf_user.id)
@@ -53,14 +51,6 @@ def update_rating_change(handle=''):
                                        'newRating': change['newRating'],
                                        'cf_user_id': cf_user.id
                                    })
-        res = get_result_for_days(result, *days_ago)
-        for day in days_ago:
-            if len(queryset.filter(days_ago=day)) == 0:
-                RatingChange.objects.create(cf_user_id=cf_user.id, days_ago=day)
-            rating_change = queryset.filter(days_ago=day).get()
-            rating_change.oldRating = res[day]
-            rating_change.newRating = res['newRating']
-            rating_change.save()
 
     if handle:
         update(CFUser.objects.filter(handle=handle).get())
@@ -87,6 +77,7 @@ def update_board(board_id=-1):  # -1表示更新所有Board
         for board in Board.objects.all():
             update_board(board.id)
         return
+    print('更新ID为%d的榜' % board_id)
     board = Board.objects.filter(id=board_id).get()
     for item in board.boarditem_set.all():
         item.max_rating = _get_max_rating(item.cf_user.handle, board.start_time, board.end_time)
@@ -94,3 +85,4 @@ def update_board(board_id=-1):  # -1表示更新所有Board
                                           board.start_time)
         if item.old_rating == 0:
             item.old_rating = 1500
+        item.save()

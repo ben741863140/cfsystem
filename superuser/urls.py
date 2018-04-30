@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.urls import path
 from .views import auto_update, superuser_views
+
 app_name = 'superuser'
 
 urlpatterns = [
@@ -12,6 +13,6 @@ urlpatterns = [
     url(r'list_add', superuser_views.list_add),
     url(r'list_override', superuser_views.list_override),
     url(r'board/create', superuser_views.create_board),
-    path('delete_board', superuser_views.delete_board)
-
+    path('delete_board', superuser_views.delete_board),
+    path('manual_update', auto_update.manual_update, name='manual_update')
 ]
