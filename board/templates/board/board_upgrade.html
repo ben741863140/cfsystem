@@ -17,7 +17,7 @@
                 <span class="rating">{{ user.newRating }}</span>
             </td>
             <td>{{ user.change }}</td>
-            <td><a href="profile/{{ user.handle }}">查看分数变化曲线</a></td>
+            <td><a href="{% url 'board:user_profile' user.handle %}">查看分数变化曲线</a></td>
         </tr>
     {% endfor %}
 {% endblock %}
