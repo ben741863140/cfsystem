@@ -16,7 +16,7 @@ class RatingChange(models.Model):
     oldRating = models.IntegerField(default=0)
     newRating = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
-    ratingUpdateTimeSeconds = models.IntegerField(null=False)
+    ratingUpdateTimeSeconds = models.IntegerField()
 
 
 class Board(models.Model):
@@ -24,6 +24,7 @@ class Board(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     type = models.CharField(max_length=20)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
 
 class BoardItem(models.Model):

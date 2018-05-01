@@ -23,6 +23,8 @@ def _get_max_rating(rating_changes, start_time, end_time):
 
 
 def create_board(request):
+    if not request.user.is_superuser or not request.user.is_authenticated:
+        redirect('/')
     form = StaticBoardForm()
     if request.method == 'POST':
         form = StaticBoardForm(request.POST)
@@ -33,7 +35,7 @@ def create_board(request):
             clean_data = form.cleaned_data
             board = Board(name=clean_data['name'],
                           start_time=clean_data['start_time'],
-                          end_time=clean_data['end_time'], type=clean_data['type'])
+                          end_time=clean_data['end_time'], type=clean_data['type'], creator=request.user)
             board.save()
             for msg in results:
                 if msg['status'] != 'OK':
@@ -50,7 +52,7 @@ def create_board(request):
                 if board_item.old_rating == 0:
                     board_item.old_rating = 1500
                 board_item.save()
-        return render(request, 'superuser/import_result.html', {'results': results})
+            return render(request, 'superuser/import_result.html', {'results': results})
     return render(request, 'superuser/create_board_form.html', {'form': form})
 
 
