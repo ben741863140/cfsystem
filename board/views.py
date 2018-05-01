@@ -20,6 +20,7 @@ def board_rating(request, board_id=-1):
     if board_id == -1:
         board_id = Board.objects.order_by('id').first().id
     time = Board.objects.filter(id=board_id).get().name
+    creator = str(Board.objects.filter(id=board_id).get().creator)
     if str("rating") == str(Board.objects.filter(id=board_id).get().type):
         for rc in BoardItem.objects.filter(board=Board.objects.filter(id=board_id).get()):
             info = User2()
@@ -31,7 +32,7 @@ def board_rating(request, board_id=-1):
         for i in range(len(users)):
             users[i].rank = i + 1
         return render(request, 'board/board_rating.html',
-                      {'users': users, 'time': time, 'boards': Board.objects.all()})
+                      {'users': users, 'time': time, 'boards': Board.objects.all(), 'creator':creator})
     else:
         for rc in BoardItem.objects.filter(board=Board.objects.filter(id=board_id).get()):
             user = User()
@@ -48,7 +49,7 @@ def board_rating(request, board_id=-1):
             users[i].rank = i + 1
             users[i].change = '+' + str(users[i].change)
         return render(request, 'board/board_upgrade.html',
-                      {'users': users, 'time': time, 'boards': Board.objects.all()})
+                      {'users': users, 'time': time, 'boards': Board.objects.all(), 'creator':creator})
 
 
 def board_rating_change(request, handle):
