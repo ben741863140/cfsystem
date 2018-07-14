@@ -147,6 +147,20 @@ def yz2(request):
         cap[str(hand)] = str(captcha)
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
+@csrf_exempt
+def yzm2(request):
+    global cap
+    tex = str(request.GET.get('hand'))
+    hand = tex
+    for user in User.objects.filter(username=tex):
+        hand = user.handle
+    try:
+        captcha = str(cap[str(hand)])
+    except KeyError:
+        captcha = ""
+    print(captcha)
+    print(request.GET.get('hand'))
+    return HttpResponse(captcha)
 
 @csrf_exempt
 def password_check(request):

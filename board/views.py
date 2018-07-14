@@ -6,7 +6,7 @@ from board.models import Board, BoardItem
 
 def board_rating(request, board_id=-1):
     if not request.user.is_authenticated:
-        redirect('/')
+        return render(request, 'index.html')
 
     class User:
         rank = rating = handle = oldRating = newRating = change = 0
