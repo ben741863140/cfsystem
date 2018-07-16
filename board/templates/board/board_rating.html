@@ -10,6 +10,7 @@
                 <td>{{ user.realname }}</td>
                 <td>{{ user.handle }}</td>
                 <td><span class="rating">{{ user.rating }}</span></td>
+                <td>{{ user.times }}</td>
                 {#            <td><a href="profile/{{ user.handle }}">查看分数变化曲线</a></td>#}
                 <td><a href="{% url 'board:user_profile' user.handle %}">查看分数变化曲线</a></td>
             </tr>

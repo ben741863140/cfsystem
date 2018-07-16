@@ -28,7 +28,11 @@ class StaticBoardForm(forms.Form):
     #                          choices=(('static', '静态榜'), ('dynamic', '动态榜')), required=False)
     type = forms.ChoiceField(label='类型',
                              widget=forms.Select(attrs={'class': 'form-control'}),
-                             choices=(('rating', '分数榜'), ('rating_change', '升级榜')), required=False)
+                             choices=(
+                                 ('rating', '分数榜'),
+                                 ('rating_change', '升级榜'),
+                                 ('max_three', '最高三场'),
+                             ), required=False)
 
     list_text = forms.CharField(label='名单导入', widget=forms.Textarea(attrs={'class': 'form-control', 'rows': '15'}))
 
