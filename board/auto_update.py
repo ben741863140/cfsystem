@@ -49,29 +49,24 @@ class AutoUpdate(threading.Thread):
         self._keep_run = False
 
     def run(self):
-        while self._keep_run:
-            if self.ready():
-                self.update()
+        while not self.ready() and self._keep_run:
             time.sleep(10 * 60)
+        while self._keep_run:
+            print('自动更新')
+            self.update()
+            time.sleep(24 * 60 * 60)
 
     def ready(self):
-        diff = datetime.datetime.now() - get_farthest_update()
-        print('days', diff.days)
-        if diff.days >= 1:
-            return True
-        print('seconds', diff.seconds)
-        if diff.seconds <= 60 * 30:
-            return False
         self.update_setting.load_setting()
-        diff = get_now_seconds() - self.update_setting.get_seconds()
-        print('diff', diff)
-        return 0 <= diff <= 15 * 60
+        diff = datetime.datetime.now().minute - self.update_setting.minute
+        return abs(diff) < 15
 
     @staticmethod
-    def update():
+    def update(only_board=False):
         print('开始更新数据库...')
-        update_rating_change()
-        update_rating()
+        if not only_board:
+            update_rating_change()
+            update_rating()
         update_board()
         print('数据库更新完成')
 

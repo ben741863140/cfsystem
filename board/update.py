@@ -21,7 +21,7 @@ def update_rating(handle=''):
         for user in CFUser.objects.all():
             update(user)
             i += 1
-            print('update rating [%d/%d]' % (i, size))
+            # print('update rating [%d/%d]' % (i, size))
 
 
 # def get_result_for_days(raw, *days_ago):
@@ -56,20 +56,25 @@ def update_rating_change(handle=''):
         update(CFUser.objects.filter(handle=handle).get())
     else:
         i = 0
-        size = CFUser.objects.count()
+        # size = CFUser.objects.count()
         for user in CFUser.objects.all():
             update(user)
             i += 1
-            print('update rating change [%d/%d]' % (i, size))
+            # print('update rating change [%d/%d]' % (i, size))
 
 
-def _get_max_rating(handle, start_time, end_time):  # 使用RatingChange得到期间内最高rating
-    max_rating = 0
+def _get_max_rating(handle, start_time, end_time, number=1):
+    # 使用RatingChange得到期间内最高rating, number指定使用最高的多少个RatingChange
+    ratings = []
     for rc in RatingChange.objects.filter(cf_user__handle=handle).all():
         time = datetime.datetime.fromtimestamp(rc.ratingUpdateTimeSeconds)
         if start_time <= time < end_time:
-            max_rating = max(max_rating, rc.newRating)
-    return max_rating
+            ratings.append(rc.newRating)
+    ratings.sort(reverse=True)
+    max_rating = 0
+    for i in range(min(number, len(ratings))):
+        max_rating += ratings[i]
+    return int(max_rating), len(ratings)
 
 
 def update_board(board_id=-1):  # -1表示更新所有Board
@@ -77,12 +82,21 @@ def update_board(board_id=-1):  # -1表示更新所有Board
         for board in Board.objects.all():
             update_board(board.id)
         return
-    print('更新ID为%d的榜' % board_id)
+    # print('更新ID为%d的榜' % board_id)
     board = Board.objects.filter(id=board_id).get()
-    for item in board.boarditem_set.all():
-        item.max_rating = _get_max_rating(item.cf_user.handle, board.start_time, board.end_time)
-        item.old_rating = _get_max_rating(item.cf_user.handle, datetime.datetime.fromtimestamp(100000),
-                                          board.start_time)
-        if item.old_rating == 0:
-            item.old_rating = 1500
-        item.save()
+    if board.type == 'max_three':
+        for item in board.boarditem_set.all():
+            item.max_rating, item.times = _get_max_rating(item.cf_user.handle, board.start_time, board.end_time,
+                                                          3)
+            item.max_rating = int(item.max_rating / 3.0)
+            if item.times < 5:
+                item.max_rating = int(item.max_rating * 0.9)
+            item.save()
+    else:
+        for item in board.boarditem_set.all():
+            item.max_rating, item.times = _get_max_rating(item.cf_user.handle, board.start_time, board.end_time)
+            item.old_rating = (_get_max_rating(item.cf_user.handle, datetime.datetime.fromtimestamp(100000),
+                                               board.start_time))[0]
+            if item.old_rating == 0:
+                item.old_rating = 1500
+            item.save()

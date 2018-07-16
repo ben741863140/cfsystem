@@ -19,7 +19,9 @@
                     <a class="list-group-item list-group-item-action" data-toggle="list"
                        href="/admin/set_auto_update" role="tab" aria-controls="messages" id="element2">设置自动更新</a>
                     <a class="list-group-item list-group-item-action" data-toggle="list"
-                       href="{% url 'superuser:manual_update' %}" role="tab" aria-controls="messages" id="element3">立即手动更新</a>
+                       href="{% url 'superuser:manual_update' 0 %}" role="tab" aria-controls="messages" id="element3">立即手动更新所有数据</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list"
+                       href="{% url 'superuser:manual_update' 1 %}" role="tab" aria-controls="messages" id="element3">立即手动更新榜单</a>
 
                 </div>
             </div>

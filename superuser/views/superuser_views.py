@@ -13,13 +13,19 @@ def modify(request):
     return render(request, 'superuser/modify.html', {'boards': Board.objects.all()})
 
 
-def _get_max_rating(rating_changes, start_time, end_time):
-    max_rating = 0
-    for change in rating_changes:
-        time = datetime.datetime.fromtimestamp(change['ratingUpdateTimeSeconds'])
-        if start_time <= time < end_time:
-            max_rating = max(max_rating, change['newRating'])
-    return max_rating
+# def _get_max_rating(rating_changes, start_time, end_time, number=1):
+#     ratings = []
+#     for change in rating_changes:
+#         time = datetime.datetime.fromtimestamp(change['ratingUpdateTimeSeconds'])
+#         if start_time <= time < end_time:
+#             ratings.append(change['newRating'])
+#             # max_rating = max(max_rating, change['newRating'])
+#
+#     ratings.sort(key=lambda x: x['newRating'], reverse=True)
+#     max_rating = 0
+#     for i in range(number):
+#         max_rating += ratings[i]
+#     return max_rating
 
 
 def create_board(request):
@@ -45,12 +51,12 @@ def create_board(request):
                 cf_user.rating = msg['rating']
                 cf_user.save()
                 board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, old_rating=0)
-                rating_changes = get_rating_change(msg['handle'])
-                board_item.max_rating = _get_max_rating(rating_changes, board.start_time, board.end_time)
-                board_item.old_rating = _get_max_rating(rating_changes, datetime.datetime.fromtimestamp(100000),
-                                                        board.start_time)
-                if board_item.old_rating == 0:
-                    board_item.old_rating = 1500
+                # rating_changes = get_rating_change(msg['handle'])
+                # board_item.max_rating = _get_max_rating(rating_changes, board.start_time, board.end_time)
+                # board_item.old_rating = _get_max_rating(rating_changes, datetime.datetime.fromtimestamp(100000),
+                #                                         board.start_time)
+                # if board_item.old_rating == 0:
+                #     board_item.old_rating = 1500
                 board_item.save()
             return render(request, 'superuser/import_result.html', {'results': results})
     return render(request, 'superuser/create_board_form.html', {'form': form})

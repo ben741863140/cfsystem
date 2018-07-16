@@ -28,7 +28,7 @@ def finished(request):
     return render(request, 'superuser/auto_update/finished.html')
 
 
-def manual_update(request):
+def manual_update(request, only_board=False):
     if request.user.is_authenticated and request.user.is_superuser:
-        AutoUpdate.update()
+        AutoUpdate.update(only_board)
     return redirect('/admin')

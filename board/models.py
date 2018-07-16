@@ -33,3 +33,4 @@ class BoardItem(models.Model):
     max_rating = models.IntegerField()
     old_rating = models.IntegerField()
     last_update = models.DateTimeField(auto_now=True)
+    times = models.IntegerField(default=0)
