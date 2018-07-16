@@ -1,15 +1,44 @@
 from django.shortcuts import render, redirect
-from board.models import CFUser
+from logreg.models import User
 import re, datetime
 from board.utility import get_rating
+from django.http import HttpResponse
+import json
 from superuser.forms import StaticBoardForm
-from board.models import Board, BoardItem
+from board.models import Board, BoardItem, CFUser
 from board.utility import get_rating_change
+from django.views.decorators.csrf import csrf_exempt
+from django.db import models
 
+@csrf_exempt
 def Userlist(request):
+    # print(23333)
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
-    return render(request, 'superuser/handle_controller.html', {'users': CFUser.objects.all()})
+    return render(request, 'superuser/handle_controller.html', {'users': User.objects.all()})
+
+@csrf_exempt
+def HandleEdit(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    # print(233)
+    if request.is_ajax():
+        hand = str(request.POST.get('hand'))
+        realname = str(request.POST.get('realname'))
+        username = str(request.POST.get('username'))
+        nickname = str(request.POST.get('nickname'))
+        user_id = request.POST.get('id')
+        print(user_id)
+        # print(233)
+        obj = User.objects.get(id=user_id)
+        print(obj.realname)
+        obj.realname = realname
+        obj.handle = hand
+        obj.username = username
+        obj.nickname = nickname
+        obj.save()
+        return_json = {}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 def modify(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:

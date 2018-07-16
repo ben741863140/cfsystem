@@ -47,3 +47,5 @@ class StaticBoardForm(forms.Form):
         if start_time >= end_time:
             raise forms.ValidationError('结束时间不能在开始时间之前')
         return end_time
+
+

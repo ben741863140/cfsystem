@@ -3,31 +3,45 @@
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">ID</th>
             <th scope="col">名字</th>
+            <th scope="col">ID</th>
             <th scope="col">CFID</th>
+            <th scope="col">昵称</th>
         </tr>
         </thead>
         <tbody>
         {% for user in users %}
-            <div id="app">
                 <tr class="element">
-                    <th scope="row"><span v-text="user" class="form-control"></span> </th>
-                    <td><span v-model="realname" class="form-control"></span></td>
-                    <td><span v-model="handle" class="form-control"></td>
+                    <th scope="row"><input type="text" class="form-control" value="{{ user.realname }}" id="{{ user.id }}_realname"> </th>
+                    <td><input type="text" class="form-control" value="{{ user.username }}" id="{{ user.id }}_username"></td>
+                    <td><input type="text" class="form-control" value="{{ user.handle }}" id="{{ user.id }}_CFID"></td>
+                    <td><input type="text" class="form-control" value="{{ user.nickname }}" id="{{ user.id }}_nickname"></td>
+                    <td align="center" style="border:0px;">
+                         <button class="btn btn-primary" id="{{ user.id }}_save" type="button">修改</button>
+                        <button class="btn btn-primary" id="{{ user.id }}_delete" type="button">删除</button>
+                    </td>
                 </tr>
-            </div>
         {% endfor %}
         </tbody>
     </table>
-{% endblock %}
-{% block vuejs %}
-<script type="text/javascript">
-var vm=new Vue({
-    el: '#app',
-    data: {
-        user
-    }
-})
-</script>
+    <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+        {% for user in users %}
+            $("#{{ user.id }}_save").click(function () {
+                var realname=$('#{{ user.id }}_realname').val();
+                {#alert(realname);#}
+                var username=$('#{{ user.id }}_username').val();
+                var handle=$('#{{ user.id }}_CFID').val();
+                var nickname=$('#{{ user.id }}_nickname').val();
+                $.ajax({
+                    type:"POST",
+                    url:"/admin/xg",
+                    data:{"hand":handle,"realname":realname,"username":username,"nickname":nickname,'id':{{ user.id }} },
+                    success: function(ret){
+                        alert("修改成功！");
+                    }
+                })
+            })
+        {% endfor %}
+    </script>
 {% endblock %}
