@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from logreg.views import index, yz, yzm, usercheck, user_exist, password_check, yz2
+from logreg.views import index, yz, yzm,yzm2, usercheck, user_exist, password_check, yz2
 urlpatterns = [
     url(r'^board/', include('board.urls')),
     url(r'^logreg/', include('logreg.urls')),
@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', include('superuser.urls')),
     url(r'^ajax/yz/', yz, name='yz'),
     url(r'^ajax/yzm/', yzm, name='yzm'),
+    url(r'^ajax/yzm2/', yzm2, name='yzm2'),
     url(r'^ajax/usercheck', usercheck, name='usercheck'),
     url(r'^ajax/user_exist', user_exist, name='user_exist'),
     url(r'^ajax/password_check', password_check, name='password_check'),

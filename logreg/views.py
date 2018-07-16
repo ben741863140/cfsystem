@@ -58,14 +58,14 @@ def yz(request):
         return_json = {
             'result': '已发送验证码到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，打开对话版块查看验证码(PS:当CF有比赛进行的时候，本系统不会发出验证码，届时请耐心等待比赛结束)'}
         hand = str(request.POST.get('hand'))
-        # print(hand)
+        print(hand)
         random.seed()
         captcha = ""
         for temp in range(0, 6):
             captcha += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
         mes = str('Your handle is being linked to the SCAU_CFsystem. The verify code is ' + str(
             captcha) + '. If the operator is not yourself, please ignore this message.')
-        # print(cap)
+        print(mes)
         send_message(str(hand), mes)
         cap[hand] = captcha
         return HttpResponse(json.dumps(return_json), content_type='application/json')
@@ -122,6 +122,7 @@ def user_exist(request):
     tex = str(request.GET.get('tex'))
     if User.objects.filter(username=tex).exists():
         t = 'true'
+        t = t + User.objects.filter(username=tex).get().handle
     return HttpResponse(t)
 
 
@@ -134,18 +135,32 @@ def yz2(request):
         # print(tex)
         for user in User.objects.filter(username=tex):
             hand = user.handle
-        # print(hand)
+        print(hand)
         random.seed()
         captcha = ""
         for temp in range(0, 6):
             captcha += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
         mes = str('Your handle is being linked to the SCAU_CFsystem. The verify code is ' + str(
             captcha) + '. If the operator is not yourself, please ignore this message.')
-        # print(cap)
+        print(mes)
         send_message(str(hand), mes)
         cap[str(hand)] = str(captcha)
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
+@csrf_exempt
+def yzm2(request):
+    global cap
+    tex = str(request.GET.get('hand'))
+    hand = tex
+    for user in User.objects.filter(username=tex):
+        hand = user.handle
+    try:
+        captcha = str(cap[str(hand)])
+    except KeyError:
+        captcha = ""
+    print(captcha)
+    print(request.GET.get('hand'))
+    return HttpResponse(captcha)
 
 @csrf_exempt
 def password_check(request):

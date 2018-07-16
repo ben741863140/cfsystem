@@ -47,14 +47,15 @@ def send_message(handle, content):
     post_dict = {
         'csrf_token': csrf_token,
         'action': 'enter',
-        'ftaa': 'g5a380v85956u33zgr',
-        'bfaa': '7b5969570828ce4f737cbbc5c4b4a88f',
-        'handle': use[:-1],
+        'ftaa': 'facg0yyl14awvys2jp',
+        'bfaa': 'd3165a769f306b8a47053d749e2d920a',
+        'handleOrEmail': use[:-1],
         'password': 'Aa123456',
         '_tta': '435'
     }
     # print(use)
     # print(handle)
+    # print(data)
     post_data = urllib.parse.urlencode(post_dict).encode()
     opener.open(url, post_data)
     url = 'http://codeforces.com/usertalk?other=' + str(handle)
