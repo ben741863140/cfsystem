@@ -1,0 +1,33 @@
+{% extends 'superuser/list_tab.html' %}
+{% block content %}
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">名字</th>
+            <th scope="col">CFID</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <div id="app">
+                <tr class="element">
+                    <th scope="row"><span v-text="user" class="form-control"></span> </th>
+                    <td><span v-model="realname" class="form-control"></span></td>
+                    <td><span v-model="handle" class="form-control"></td>
+                </tr>
+            </div>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% block vuejs %}
+<script type="text/javascript">
+var vm=new Vue({
+    el: '#app',
+    data: {
+        user
+    }
+})
+</script>
+{% endblock %}

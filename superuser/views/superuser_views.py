@@ -6,6 +6,10 @@ from superuser.forms import StaticBoardForm
 from board.models import Board, BoardItem
 from board.utility import get_rating_change
 
+def Userlist(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    return render(request, 'superuser/handle_controller.html', {'users': CFUser.objects.all()})
 
 def modify(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:

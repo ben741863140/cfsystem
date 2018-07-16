@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'list_add', superuser_views.list_add),
     url(r'list_override', superuser_views.list_override),
     url(r'board/create', superuser_views.create_board),
+    url(r'^handle_controller', superuser_views.Userlist),
     path('delete_board', superuser_views.delete_board),
     path('manual_update', auto_update.manual_update, name='manual_update')
 ]
