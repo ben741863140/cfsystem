@@ -27,6 +27,7 @@ def board_rating(request, board_id=-1):
             info.rating = item.max_rating
             info.handle = item.cf_user.handle
             info.realname = item.cf_user.realname
+            print(type(item.cf_user.user))
             info.times = item.times
             users.append(info)
         users.sort(key=lambda x: x.rating, reverse=True)

@@ -24,7 +24,7 @@ class Board(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     type = models.CharField(max_length=20)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
 
 class BoardItem(models.Model):
