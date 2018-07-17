@@ -18,6 +18,7 @@
             <th scope="col">ID</th>
             <th scope="col">CFID</th>
             <th scope="col">昵称</th>
+            <th scope="col">管理员</th>
         </tr>
         </thead>
         <tbody>
@@ -32,6 +33,13 @@
                 <td><input type="text" class="form-control" value="{{ user.handle }}" id="{{ user.id }}_CFID"></td>
                 <td><input type="text" class="form-control" value="{{ user.nickname }}" id="{{ user.id }}_nickname">
                 </td>
+                {% if user.is_superuser %}
+                    <td><input type="checkbox" class="form-control"  checked="checked" id="{{ user.id }}_super" style="zoom:2">
+                    </td>
+                {% else %}
+                    <td><input type="checkbox" class="form-control"   id="{{ user.id }}_super" style="zoom:2">
+                    </td>
+                {% endif %}
                 <td align="center" style="border:0px;">
                     <button class="btn btn-primary" id="{{ user.id }}_save" type="button">修改</button>
                     <button class="btn btn-primary" id="{{ user.id }}_delete" type="button">删除</button>
@@ -44,12 +52,15 @@
     <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
         {% for user in users %}
+            $('#{{ user.id }}_super').prop("checked",);
             $("#{{ user.id }}_save").click(function () {
                 var realname = $('#{{ user.id }}_realname').val();
                 {#alert(realname);#}
                 var username = $('#{{ user.id }}_username').val();
                 var handle = $('#{{ user.id }}_CFID').val();
                 var nickname = $('#{{ user.id }}_nickname').val();
+                var superuser = $('#{{ user.id }}_super').prop("checked");
+                {#alert(superuser);#}
                 $.ajax({
                     type: "POST",
                     url: "/admin/modify_handle",
@@ -59,6 +70,7 @@
                         "username": username,
                         "nickname": nickname,
                         'id':{{ user.id }},
+                        'super':superuser,
                         csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
                     },
                     success: function (ret) {
