@@ -4,7 +4,7 @@ from django.conf import settings
 
 
 class CFUser(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL , null=True)
     handle = models.CharField(max_length=30, unique=True)
     rating = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
