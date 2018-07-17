@@ -1,4 +1,15 @@
 {% extends 'superuser/list_tab.html' %}
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            $(".list-group-item").removeClass("active")
+            $('#element5').addClass('active')
+            $('.list-group-item').click(function () {
+                window.location.href = $(this).attr('href')
+            })
+        })
+    </script>
+{% endblock %}
 {% block content %}
     <table class="table">
         <thead>
@@ -11,16 +22,19 @@
         </thead>
         <tbody>
         {% for user in users %}
-                <tr class="element">
-                    <th scope="row"><input type="text" class="form-control" value="{{ user.realname }}" id="{{ user.id }}_realname"> </th>
-                    <td><input type="text" class="form-control" value="{{ user.username }}" id="{{ user.id }}_username"></td>
-                    <td><input type="text" class="form-control" value="{{ user.handle }}" id="{{ user.id }}_CFID"></td>
-                    <td><input type="text" class="form-control" value="{{ user.nickname }}" id="{{ user.id }}_nickname"></td>
-                    <td align="center" style="border:0px;">
-                         <button class="btn btn-primary" id="{{ user.id }}_save" type="button">修改</button>
-                        <button class="btn btn-primary" id="{{ user.id }}_delete" type="button">删除</button>
-                    </td>
-                </tr>
+            <tr class="element">
+                <th scope="row"><input type="text" class="form-control" value="{{ user.realname }}"
+                                       id="{{ user.id }}_realname"></th>
+                <td><input type="text" class="form-control" value="{{ user.username }}" id="{{ user.id }}_username">
+                </td>
+                <td><input type="text" class="form-control" value="{{ user.handle }}" id="{{ user.id }}_CFID"></td>
+                <td><input type="text" class="form-control" value="{{ user.nickname }}" id="{{ user.id }}_nickname">
+                </td>
+                <td align="center" style="border:0px;">
+                    <button class="btn btn-primary" id="{{ user.id }}_save" type="button">修改</button>
+                    <button class="btn btn-primary" id="{{ user.id }}_delete" type="button">删除</button>
+                </td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>
@@ -28,16 +42,22 @@
     <script>
         {% for user in users %}
             $("#{{ user.id }}_save").click(function () {
-                var realname=$('#{{ user.id }}_realname').val();
+                var realname = $('#{{ user.id }}_realname').val();
                 {#alert(realname);#}
-                var username=$('#{{ user.id }}_username').val();
-                var handle=$('#{{ user.id }}_CFID').val();
-                var nickname=$('#{{ user.id }}_nickname').val();
+                var username = $('#{{ user.id }}_username').val();
+                var handle = $('#{{ user.id }}_CFID').val();
+                var nickname = $('#{{ user.id }}_nickname').val();
                 $.ajax({
-                    type:"POST",
-                    url:"/admin/xg",
-                    data:{"hand":handle,"realname":realname,"username":username,"nickname":nickname,'id':{{ user.id }} },
-                    success: function(ret){
+                    type: "POST",
+                    url: "/admin/modify_handle",
+                    data: {
+                        "hand": handle,
+                        "realname": realname,
+                        "username": username,
+                        "nickname": nickname,
+                        'id':{{ user.id }}
+                    },
+                    success: function (ret) {
                         alert("修改成功！");
                     }
                 })

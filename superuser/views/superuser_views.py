@@ -10,15 +10,14 @@ from board.utility import get_rating_change
 from django.views.decorators.csrf import csrf_exempt
 from django.db import models
 
-@csrf_exempt
-def Userlist(request):
-    # print(23333)
+
+def list_user(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
     return render(request, 'superuser/handle_controller.html', {'users': User.objects.all()})
 
-@csrf_exempt
-def HandleEdit(request):
+
+def edit_handle(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
     # print(233)
@@ -39,6 +38,7 @@ def HandleEdit(request):
         obj.save()
         return_json = {}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
+
 
 def modify(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
@@ -105,16 +105,6 @@ def delete_board(request):
     return redirect('/')
 
 
-def del_cf_users(request):
-    if not request.user.is_authenticated or request.user.is_superuser == 0:
-        return redirect('/')
-    if request.method != 'POST':
-        redirect('/')
-    for handle in request.POST.getlist('users[]'):
-        CFUser.objects.filter(handle=handle).get().delete()
-    return render(request, 'superuser/modify.html', {'users': CFUser.objects.all()})
-
-
 def _deal_list(text):  # not a view function
     results = []
     visit = []
@@ -144,38 +134,6 @@ def _update_cf_user(res):  # not a view
         if res['realname']:
             user.realname = res['realname']
         user.save()
-
-
-def list_add(request):
-    if not request.user.is_authenticated or request.user.is_superuser == 0:
-        return redirect('/')
-    if request.method == 'POST':
-        msg = _deal_list(request.POST['list'])
-        for res in msg['results']:
-            _update_cf_user(res)
-        msg['results'].sort(key=lambda x: x['status'])
-        return render(request, 'superuser/add_result.html', context=msg)
-    return render(request, 'superuser/list_add.html')
-
-
-def list_override(request):
-    if not request.user.is_authenticated or request.user.is_superuser == 0:
-        return redirect('/')
-    if request.method == 'POST':
-        msgs = _deal_list(request.POST['list'])
-        handles = msgs['handles']
-        deleted = []
-        for user in CFUser.objects.all():
-            if user.handle not in handles:
-                res = {'status': 'OK', 'comment': '删除成功', 'handle': user.handle, 'realname': user.realname}
-                msgs['results'].append(res)
-                deleted.append(user.handle)
-                user.delete()
-        for res in msgs['results']:
-            if res['status'] == 'OK' and res['handle'] not in deleted:
-                _update_cf_user(res)
-        return render(request, 'superuser/add_result.html', context=msgs)
-    return render(request, 'superuser/list_override.html')
 
 
 def get_user_info(line):

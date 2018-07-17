@@ -17,11 +17,13 @@
                     <a class="list-group-item list-group-item-action active" data-toggle="list"
                        href="/admin" role="tab" aria-controls="home" id="element1">编辑排行榜</a>
                     <a class="list-group-item list-group-item-action" data-toggle="list"
-                       href="/admin/set_auto_update" role="tab" aria-controls="messages" id="element2">设置自动更新</a>
+                       href="{% url 'superuser:handle_controller' %}" role="tab" aria-controls="messages" id="element5">编辑用户</a>
                     <a class="list-group-item list-group-item-action" data-toggle="list"
-                       href="{% url 'superuser:manual_update' 0 %}" role="tab" aria-controls="messages" id="element3">立即手动更新所有数据</a>
+                    href="/admin/set_auto_update" role="tab" aria-controls="messages" id="element2">设置自动更新</a>
                     <a class="list-group-item list-group-item-action" data-toggle="list"
-                       href="{% url 'superuser:manual_update' 1 %}" role="tab" aria-controls="messages" id="element3">立即手动更新榜单</a>
+                    href="{% url 'superuser:manual_update' 0 %}" role="tab" aria-controls="messages" id="element3">立即手动更新所有数据</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list"
+                    href="{% url 'superuser:manual_update' 1 %}" role="tab" aria-controls="messages" id="element4">立即手动更新榜单</a>
 
                 </div>
             </div>
