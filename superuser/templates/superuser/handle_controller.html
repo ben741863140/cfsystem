@@ -21,6 +21,8 @@
         </tr>
         </thead>
         <tbody>
+        <form id="form", class="form-control", method="post">
+        {% csrf_token %}
         {% for user in users %}
             <tr class="element">
                 <th scope="row"><input type="text" class="form-control" value="{{ user.realname }}"
@@ -36,6 +38,7 @@
                 </td>
             </tr>
         {% endfor %}
+        </form>
         </tbody>
     </table>
     <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -55,10 +58,24 @@
                         "realname": realname,
                         "username": username,
                         "nickname": nickname,
-                        'id':{{ user.id }}
+                        'id':{{ user.id }},
+                        csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
                     },
                     success: function (ret) {
                         alert("修改成功！");
+                    }
+                })
+            })
+            $("#{{ user.id }}_delete").click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/handle_delete",
+                    data: {
+                        'id':{{ user.id }},
+                        csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
+                    },
+                    success: function (ret) {
+                        alert("删除成功！");
                     }
                 })
             })

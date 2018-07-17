@@ -39,6 +39,17 @@ def edit_handle(request):
         return_json = {}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
+def delete_handle(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    # print(233)
+    if request.is_ajax():
+        user_id = request.POST.get('id')
+        print(user_id)
+        # print(233)
+        User.objects.filter(id=user_id).delete()
+        return_json = {}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 def modify(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
