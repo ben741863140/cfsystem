@@ -13,6 +13,7 @@ from django.db import models
 from xlwt import *
 import io
 
+
 def excel_export(request):
     """
         导出excel表格
@@ -56,6 +57,7 @@ def excel_export(request):
         response.write(sio.getvalue())
         return response
 
+
 def list_user(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
@@ -89,6 +91,7 @@ def edit_handle(request):
         return_json = {}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
+
 def delete_handle(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
@@ -100,6 +103,7 @@ def delete_handle(request):
         User.objects.filter(id=user_id).delete()
         return_json = {}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
+
 
 def modify(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:

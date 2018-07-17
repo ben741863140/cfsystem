@@ -27,7 +27,7 @@ def board_rating(request, board_id=-1):
             info.rating = item.max_rating
             info.handle = item.cf_user.handle
             info.realname = item.cf_user.realname
-            if item.cf_user.user:
+            if item.cf_user.user and item.cf_user.user.nickname:
                 info.nickname = '(' + item.cf_user.user.nickname + ')'
             info.times = item.times
             users.append(info)

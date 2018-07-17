@@ -1,5 +1,6 @@
 import threading, time, datetime, re
 from board.update import update_rating_change, update_rating, update_board
+from board import update
 from board.models import CFUser
 
 
@@ -68,6 +69,7 @@ class AutoUpdate(threading.Thread):
             update_rating_change()
             update_rating()
         update_board()
+        update.update_user_and_cf_user()
         print('数据库更新完成')
 
 
