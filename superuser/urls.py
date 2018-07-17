@@ -11,6 +11,8 @@ urlpatterns = [
     url(r'finished', auto_update.finished),
     path('board/create', superuser_views.create_board),
     path('handle_controller', superuser_views.list_user, name='handle_controller'),
+    path('handle_delete', superuser_views.delete_handle),
+    path('download_excel', superuser_views.excel_export, name='excel_export'),
     path('modify_handle', superuser_views.edit_handle),
     path('delete_board', superuser_views.delete_board),
     path('manual_update/<int:only_board>', auto_update.manual_update, name='manual_update')

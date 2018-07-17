@@ -9,7 +9,7 @@
     {% for user in users %}
         <tr>
             <th scope="row">{{ user.rank }}</th>
-            <td>{{ user.realname }}</td>
+            <td>{{ user.realname }}{{ user.nickname }}</td>
             <td>{{ user.handle }}</td>
             <td>
                 <span class="oldRating">{{ user.oldRating }}</span>

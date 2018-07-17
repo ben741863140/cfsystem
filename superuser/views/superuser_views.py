@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 from logreg.models import User
 import re, datetime
@@ -9,7 +10,51 @@ from board.models import Board, BoardItem, CFUser
 from board.utility import get_rating_change
 from django.views.decorators.csrf import csrf_exempt
 from django.db import models
+from xlwt import *
+import io
 
+def excel_export(request):
+    """
+        导出excel表格
+        """
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    list_obj = User.objects.all().order_by("username")
+    if list_obj:
+        # 创建工作薄
+        ws = Workbook(encoding='utf-8')
+        w = ws.add_sheet(u"数据报表")
+        w.write(0, 0, u"账号")
+        w.write(0, 1, u"CFID")
+        w.write(0, 2, u"真名")
+        w.write(0, 3, u"昵称")
+        # 写入数据
+        excel_row = 1
+        for obj in list_obj:
+            data_id = obj.username
+            data_user = obj.handle
+            data_realname = obj.realname
+            data_nickname = obj.nickname
+            w.write(excel_row, 0, data_id)
+            w.write(excel_row, 1, data_user)
+            w.write(excel_row, 2, data_realname)
+            w.write(excel_row, 3, data_nickname)
+            excel_row += 1
+        # 检测文件是够存在
+        # 方框中代码是保存本地文件使用，如不需要请删除该代码
+        ###########################
+        # exist_file = os.path.exists("test.xls")
+        # if exist_file:
+        #     os.remove(r"test.xls")
+        # ws.save("test.xls")
+        ############################
+        sio = io.BytesIO()
+        ws.save(sio)
+        sio.seek(0)
+        response = HttpResponse(sio.getvalue(), content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=名单.xls'
+        response.write(sio.getvalue())
+        return response
 
 def list_user(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
@@ -27,10 +72,15 @@ def edit_handle(request):
         username = str(request.POST.get('username'))
         nickname = str(request.POST.get('nickname'))
         user_id = request.POST.get('id')
+        is_super = str(request.POST.get('super'))
         print(user_id)
         # print(233)
         obj = User.objects.get(id=user_id)
         print(obj.realname)
+        if is_super == 'true':
+            obj.is_superuser = True
+        else:
+            obj.is_superuser = False
         obj.realname = realname
         obj.handle = hand
         obj.username = username
@@ -39,6 +89,17 @@ def edit_handle(request):
         return_json = {}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
+def delete_handle(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    # print(233)
+    if request.is_ajax():
+        user_id = request.POST.get('id')
+        print(user_id)
+        # print(233)
+        User.objects.filter(id=user_id).delete()
+        return_json = {}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 def modify(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
