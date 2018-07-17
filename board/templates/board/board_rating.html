@@ -7,7 +7,7 @@
         {% if user.rating %}
             <tr>
                 <th scope="row">{{ user.rank }}</th>
-                <td>{{ user.realname }}</td>
+                <td>{{ user.realname }}{{ user.nickname }}</td>
                 <td>{{ user.handle }}</td>
                 <td><span class="rating">{{ user.rating }}</span></td>
                 <td>{{ user.times }}</td>

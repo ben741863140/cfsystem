@@ -10,11 +10,11 @@ def board_rating(request, board_id=-1):
 
     class User:
         rank = rating = handle = oldRating = newRating = change = 0
-        realname = ''
+        nickname=realname = ''
 
     class User2:
         rank = rating = handle = 0
-        realname = ''
+        nickname=realname = ''
 
     users = []
     if board_id == -1:
@@ -27,6 +27,8 @@ def board_rating(request, board_id=-1):
             info.rating = item.max_rating
             info.handle = item.cf_user.handle
             info.realname = item.cf_user.realname
+            if item.cf_user.user:
+                info.nickname = '(' + item.cf_user.user.nickname + ')'
             info.times = item.times
             users.append(info)
         users.sort(key=lambda x: x.rating, reverse=True)
@@ -45,6 +47,8 @@ def board_rating(request, board_id=-1):
             user.newRating = item.max_rating
             user.realname = item.cf_user.realname
             user.times = item.times
+            if item.cf_user.user:
+                user.nickname = '(' + item.cf_user.user.nickname + ')'
             users.append(user)
         users.sort(key=lambda x: x.change, reverse=True)
         for i in range(len(users)):
