@@ -1,5 +1,5 @@
 from board import utility
-from board.models import CFUser, RatingChange
+from board.models import CFUser, RatingChange, User
 from .models import Board
 import datetime
 
@@ -100,3 +100,11 @@ def update_board(board_id=-1):  # -1表示更新所有Board
             if item.old_rating == 0:
                 item.old_rating = 1500
             item.save()
+
+
+def update_user_and_cf_user():
+    for user in User.objects.all():
+        cf_user = CFUser.objects.filter(handle=user.handle).first()
+        if cf_user:
+            cf_user.user = user
+            cf_user.save()
