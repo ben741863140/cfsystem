@@ -12,6 +12,16 @@ from board.update import update_rating, update_rating_change
 
 cap = dict()
 
+def modify_self(request):
+    if request.user.is_authenticated == False:
+        return redirect('/')
+    if request.method == 'POST':
+        nickname = str(request.POST.get('nickname'))
+        obj = User.objects.get(id=request.user.id)
+        obj.nickname = nickname
+        obj.save()
+        return redirect('/')
+    return render(request, 'logreg/modify_self.html',)
 
 @csrf_exempt
 def register(request):

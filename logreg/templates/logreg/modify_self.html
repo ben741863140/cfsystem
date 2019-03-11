@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block css %}
+    <link rel="stylesheet" href="https://unpkg.com/mobi.css/dist/mobi.min.css">
+{% endblock %}
+{% block index %}
+<div class="flex-center">
+    <div class="container">
+        <div class="flex-center">
+            <div class="unit-1-2 unit-1-on-mobile">
+                <h3>修改信息</h3>
+                <form class="form" action="{% url 'logreg:modify_self' %}" method="post">
+                    {% csrf_token %}
+                    <p class="form">昵称:</p>
+                    <span><input type="text" name="nickname" placeholder="{{ request.user.nickname }}"></span>
+                    <button type="submit" class="btn btn-primary btn-block">保存</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

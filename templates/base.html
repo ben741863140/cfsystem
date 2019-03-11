@@ -34,9 +34,10 @@
         </li>
     {% endif %}
     {% if user.is_authenticated %}
-        <span class="navbar-text" , style="margin-left: auto">
-                        {{ user.username }}
-                    </span>
+        <span class="navbar-text" , style="margin-left: auto"></span>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'logreg:modify_self' %}">{{ user.username }}</a>
+        </li>
         <li class="nav-item">
             <a class="nav-link" href="{% url 'password_change' %}">修改密码</a>
         </li>

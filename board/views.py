@@ -27,7 +27,11 @@ def board_rating(request, board_id=-1):
             info.rating = item.max_rating
             info.handle = item.cf_user.handle
             info.realname = item.cf_user.realname
+<<<<<<< HEAD
+            if item.cf_user.user and item.cf_user.user.nickname != '':
+=======
             if item.cf_user.user and item.cf_user.user.nickname:
+>>>>>>> 011a4b753a2632c18d268486000ab90aa6238c70
                 info.nickname = '(' + item.cf_user.user.nickname + ')'
             info.times = item.times
             users.append(info)
@@ -47,7 +51,7 @@ def board_rating(request, board_id=-1):
             user.newRating = item.max_rating
             user.realname = item.cf_user.realname
             user.times = item.times
-            if item.cf_user.user:
+            if item.cf_user.user and item.cf_user.user.nickname != '':
                 user.nickname = '(' + item.cf_user.user.nickname + ')'
             users.append(user)
         users.sort(key=lambda x: x.change, reverse=True)
