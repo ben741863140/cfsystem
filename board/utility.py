@@ -20,7 +20,4 @@ def get_rating(handle):
 def get_rating_change(handle):
     url = 'http://codeforces.com/api/user.rating?handle=' + str(handle)
     results = BeautifulSoup(requests.get(url).text, 'html.parser').text
-    results = eval(results)
-    if results['status'] != 'OK':
-        raise Exception(results['comment'])
-    return results['result']
+    return eval(results)

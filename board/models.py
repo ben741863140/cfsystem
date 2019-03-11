@@ -4,7 +4,7 @@ from django.conf import settings
 
 
 class CFUser(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL , null=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     handle = models.CharField(max_length=30, unique=True)
     rating = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
@@ -12,11 +12,14 @@ class CFUser(models.Model):
 
 
 class RatingChange(models.Model):
+    newRating = models.IntegerField()
+    ratingUpdateTimeSeconds = models.IntegerField(primary_key=True)
     cf_user = models.ForeignKey(CFUser, on_delete=models.CASCADE)
-    oldRating = models.IntegerField(default=0)
-    newRating = models.IntegerField(default=0)
-    last_update = models.DateTimeField(auto_now=True)
-    ratingUpdateTimeSeconds = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'board_ratingchange'
+        unique_together = (('cf_user', 'ratingUpdateTimeSeconds'),)
 
 
 class Board(models.Model):

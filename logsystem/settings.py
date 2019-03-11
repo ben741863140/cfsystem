@@ -80,8 +80,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 引擎
         'NAME': 'logsystem',  # 数据库名字
-        'USER': 'leon',
-        'PASSWORD': 'b33267015',
+        'USER': 'toshi',
+        'PASSWORD': 'Aa123456',
         'HOST': '119.29.227.117',
         'PORT': '3306',
     }

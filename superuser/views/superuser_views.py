@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 from logreg.models import User
-import re, datetime
+import re
+import datetime
 from board.utility import get_rating
 from django.http import HttpResponse
 import json
 from superuser.forms import StaticBoardForm
 from board.models import Board, BoardItem, CFUser
-from board.utility import get_rating_change
-from django.views.decorators.csrf import csrf_exempt
-from django.db import models
 from xlwt import *
 import io
 
@@ -202,7 +200,7 @@ def _update_cf_user(res):  # not a view
 
 
 def get_user_info(line):
-    handle = re.findall(re.compile(r'[0-9a-zA-Z_]{3,24}'), line)
+    handle = re.findall(re.compile(r'[0-9a-zA-Z_-]{3,24}'), line)
     realname = re.findall(re.compile(r'[\u4e00-\u9fa5]{2,3}'), line)
     if len(handle) != 1 or len(realname) > 1:
         return {'status': 'FAILED', 'comment': '无法识别'}

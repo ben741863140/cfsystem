@@ -62,9 +62,8 @@ def board_rating_change(request, handle):
     if request.user.is_authenticated:
         queryset = RatingChange.objects.filter(cf_user__handle=handle)
         data = []
-        for change in queryset.filter(ratingUpdateTimeSeconds__isnull=False):
+        for change in queryset:
             data.append([change.ratingUpdateTimeSeconds * 1000, change.newRating])
-        # print(str(data)[1:-1])
         data = str(data)[1:-1]
         return render(request, 'board/rating_change.html', {'data': data})
     else:

@@ -10,7 +10,6 @@ from logreg.models import User
 from board.models import RatingChange, CFUser
 from board.update import update_rating, update_rating_change
 
-
 cap = dict()
 
 
@@ -22,7 +21,7 @@ def register(request):
     global hint
     global white
     redirect_to = request.POST.get('next', request.GET.get('next', ''))
-    if request.is_ajax() == False and request.method == 'POST':
+    if not request.is_ajax() and request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             captcha = ""
@@ -130,7 +129,8 @@ def user_exist(request):
 def yz2(request):
     global cap
     if request.is_ajax():
-        return_json = {'result': '已发送验证码到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，打开对话版块查看验证码(PS:当CF有比赛进行的时候，本系统不会发出验证码，届时请耐心等待比赛结束)'}
+        return_json = {
+            'result': '已发送验证码到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，打开对话版块查看验证码(PS:当CF有比赛进行的时候，本系统不会发出验证码，届时请耐心等待比赛结束)'}
         tex = str(request.POST.get('tex'))
         # print(tex)
         for user in User.objects.filter(username=tex):
@@ -147,6 +147,7 @@ def yz2(request):
         cap[str(hand)] = str(captcha)
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
+
 @csrf_exempt
 def yzm2(request):
     global cap
@@ -162,6 +163,7 @@ def yzm2(request):
     print(request.GET.get('hand'))
     return HttpResponse(captcha)
 
+
 @csrf_exempt
 def password_check(request):
     t = 'true'
@@ -173,7 +175,7 @@ def password_check(request):
         if tex[temp] < '0' or tex[temp] > '9':
             check = True
 
-    if check == False:
+    if not check:
         t = 'false'
     if User.objects.filter(username=tex).exists() or User.objects.filter(handle=tex).exists():
         t = 'false'
@@ -184,7 +186,7 @@ def index(request):
     if request.user.is_authenticated:
         queryset = RatingChange.objects.filter(cf_user__handle=request.user.handle)
         data = []
-        for change in queryset.filter(ratingUpdateTimeSeconds__isnull=False):
+        for change in queryset:
             data.append([change.ratingUpdateTimeSeconds * 1000, change.newRating])
         data = str(data)[1:-1]
         return render(request, 'index.html', {'data': data})

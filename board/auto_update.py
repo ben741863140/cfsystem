@@ -86,5 +86,6 @@ def get_farthest_update():
 
 
 def auto_update():
-    if threading.active_count() == 1:  # 防止多次启动（似乎不用）
-        AutoUpdate().start()
+    pass
+    # if threading.active_count() == 1:  # 防止多次启动（似乎不用）
+    #     AutoUpdate().start()
