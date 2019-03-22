@@ -10,28 +10,25 @@ def board_rating(request, board_id=-1):
 
     class User:
         rank = rating = handle = oldRating = newRating = change = 0
-        nickname=realname = ''
+        nickname = realname = ''
 
     class User2:
         rank = rating = handle = 0
-        nickname=realname = ''
+        nickname = realname = ''
 
     users = []
     if board_id == -1:
         board_id = Board.objects.order_by('id').first().id
     time = Board.objects.filter(id=board_id).get().name
     creator = str(Board.objects.filter(id=board_id).get().creator)
-    if str("rating") == str(Board.objects.filter(id=board_id).get().type) or str(Board.objects.filter(id=board_id).get().type) == 'max_three':
+    if str("rating") == str(Board.objects.filter(id=board_id).get().type) or str(
+            Board.objects.filter(id=board_id).get().type) == 'max_three':
         for item in BoardItem.objects.filter(board=Board.objects.filter(id=board_id).get()):
             info = User2()
             info.rating = item.max_rating
             info.handle = item.cf_user.handle
             info.realname = item.cf_user.realname
-<<<<<<< HEAD
-            if item.cf_user.user and item.cf_user.user.nickname != '':
-=======
             if item.cf_user.user and item.cf_user.user.nickname:
->>>>>>> 011a4b753a2632c18d268486000ab90aa6238c70
                 info.nickname = '(' + item.cf_user.user.nickname + ')'
             info.times = item.times
             users.append(info)
@@ -39,7 +36,7 @@ def board_rating(request, board_id=-1):
         for i in range(len(users)):
             users[i].rank = i + 1
         return render(request, 'board/board_rating.html',
-                      {'users': users, 'time': time, 'boards': Board.objects.all(), 'creator':creator})
+                      {'users': users, 'time': time, 'boards': Board.objects.all(), 'creator': creator})
     else:
         for item in BoardItem.objects.filter(board=Board.objects.filter(id=board_id).get()):
             user = User()
@@ -59,7 +56,7 @@ def board_rating(request, board_id=-1):
             users[i].rank = i + 1
             users[i].change = '+' + str(users[i].change)
         return render(request, 'board/board_upgrade.html',
-                      {'users': users, 'time': time, 'boards': Board.objects.all(), 'creator':creator})
+                      {'users': users, 'time': time, 'boards': Board.objects.all(), 'creator': creator})
 
 
 def board_rating_change(request, handle):
