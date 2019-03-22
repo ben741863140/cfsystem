@@ -49,7 +49,7 @@ def send_message(handle, content):
         'action': 'enter',
         'ftaa': 'facg0yyl14awvys2jp',
         'bfaa': 'd3165a769f306b8a47053d749e2d920a',
-        'handleOrEmail': use[:-1],
+        'handleOrEmail': 'scau_support',
         'password': 'Aa123456',
         '_tta': '435'
     }
