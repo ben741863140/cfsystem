@@ -1,6 +1,5 @@
-from django.shortcuts import render, redirect
-from board.models import CFUser, RatingChange, Board, BoardItem
-from board.auto_update import auto_update
+from django.shortcuts import render
+from board.models import RatingChange
 from board.models import Board, BoardItem
 
 
@@ -71,4 +70,3 @@ def board_rating_change(request, handle):
         return render(request, 'index.html')
 
 
-auto_update()
