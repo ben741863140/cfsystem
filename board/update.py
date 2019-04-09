@@ -103,6 +103,8 @@ def update_board(board_id=-1):  # -1表示更新所有Board
             item.save()
 
 
+# 将cf_user和user关联起来，因为user只存了handle，所以对应的cf_user可能没对应到user上
+# 需修改数据库结构解决
 def update_user_and_cf_user():
     for user in User.objects.all():
         cf_user = CFUser.objects.filter(handle=user.handle).first()
