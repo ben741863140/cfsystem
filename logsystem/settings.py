@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab'
     'logreg',
     'board',
     'superuser',
@@ -132,3 +133,7 @@ STATICFILES_DIRS = [
 AUTH_USER_MODEL = 'logreg.User'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
+
+CRONJOBS = [
+    ('* 0 * * *', 'board.auto_update.update_all'),
+]
