@@ -201,7 +201,7 @@ def _update_cf_user(res):  # not a view
 
 def get_user_info(line):
     handle = re.findall(re.compile(r'[0-9a-zA-Z_-]{3,24}'), line)
-    realname = re.findall(re.compile(r'[\u4e00-\u9fa5]{2,3}'), line)
+    realname = re.findall(re.compile(r'[\u4e00-\u9fa5]{2,30}'), line)
     if len(handle) != 1 or len(realname) > 1:
         return {'status': 'FAILED', 'comment': '无法识别'}
     if len(realname) == 0:
