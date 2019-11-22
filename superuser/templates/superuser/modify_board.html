@@ -1,0 +1,92 @@
+{% extends 'superuser/list_tab.html' %}
+{% block js %}
+    <script>
+        $(document).ready(function () {
+            $(".list-group-item").removeClass("active")
+            $('#element1').addClass('active')
+            $('.list-group-item').click(function () {
+                window.location.href = $(this).attr('href')
+            })
+        })
+    </script>
+{% endblock %}
+{% block content %}
+    <table class="table">
+    {% csrf_token %}
+        <form id="form", class="form-control", method="post">
+        <tr>
+            <th scope="col">排行榜名称</th>
+            <td><input type="text" class="form-control" value="{{ board.name }}" id="board_name"></td>
+            <th scope="col">排行榜类型</th>
+            <td><select class="form-control" required="required" id="board_type">
+                {% if board.type == "rating" %}
+                    <option class="form-control" value="rating">分数榜</option>
+                    <option class="form-control" value="rating_change">升级榜</option>
+                    <option class="form-control" value="max_three">最高三场</option>
+                {% elif board.type == "rating_change" %}
+                    <option class="form-control" value="rating_change">升级榜</option>
+                    <option class="form-control" value="rating">分数榜</option>
+                    <option class="form-control" value="max_three">最高三场</option>
+                {% elif board.type == "max_three" %}
+                    <option class="form-control" value="max_three">最高三场</option>
+                    <option class="form-control" value="rating">分数榜</option>
+                    <option class="form-control" value="rating_change">升级榜</option>
+                {% endif %}
+            </select> </td>
+            <td align="center" style="border:0px;">
+                <button class="btn btn-primary" id="board_save" type="button">修改</button>
+            </td>
+        </tr>
+        <tr>
+            <th scope="col">开始时间</th>
+            <td><input class="form-control" type="datetime-local" name="start_time" id="start_time"></td>
+        </tr>
+        <tr>
+            <th scope="col">截止时间</th>
+            <td><input type="datetime-local" class="form-control" required name="start_time" value="{{ board.end_time }}"></td>
+        </tr>
+        </form>
+    </table>
+    <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+        var format = "";
+
+        //构造符合datetime-local格式的当前日期
+        function getFormat(){
+        format = "";
+        var nTime = new Date();
+        format += nTime.getFullYear()+"-";
+        format += (nTime.getMonth()+1)<10?"0"+(nTime.getMonth()+1):(nTime.getMonth()+1);
+        format += "-";
+        format += nTime.getDate()<10?"0"+(nTime.getDate()):(nTime.getDate());
+        format += "T";
+        format += nTime.getHours()<10?"0"+(nTime.getHours()):(nTime.getHours());
+        format += ":";
+        format += nTime.getMinutes()<10?"0"+(nTime.getMinutes()):(nTime.getMinutes());
+        format += ":00";
+        }
+
+        $(function(){
+
+        　　document.getElementById("start_time").value = format;//赋初始值
+
+        })
+        $('#board_save').click(function () {
+          var name =$('#board_name').val();
+          var type = $('#board_type').val();
+          $.ajax({
+              type: "POST",
+              url: "/admin/modify_board_board",
+              data: {
+                  "name": name,
+                  "type": type,
+                  "id": {{ board.id }},
+                  csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
+              },
+              success: function (ret) {
+                alert("修改成功！");
+              }
+          })
+        })
+    </script>
+{% endblock %}

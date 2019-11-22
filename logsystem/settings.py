@@ -22,9 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'd1q!t#2*rv=*n_s%5))&7&bho7t*8kr+_shx_ruhv@7%8biws0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['119.29.227.117']
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -81,9 +81,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 引擎
         'NAME': 'cfsystem',  # 数据库名字
-        'USER': 'root',
-        'PASSWORD': 'ben123456',
-        'HOST': 'localhost',
+        'USER': 'toshi',
+        'PASSWORD': 'toshi123456',
+        'HOST': '119.29.227.117',
         'PORT': '3306',
     }
 }

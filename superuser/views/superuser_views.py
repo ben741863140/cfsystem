@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
+from django.views.decorators.csrf import csrf_exempt
+
 from logreg.models import User
 import re
 import datetime
 from board.utility import get_rating
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 import json
 from superuser.forms import StaticBoardForm
 from board.models import Board, BoardItem, CFUser
@@ -215,3 +217,28 @@ def get_user_info(line):
         return res
     res.update(get_rating(handle))
     return res
+
+
+def modify_board_board(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    if request.is_ajax():
+        board_id = request.POST.get('id')
+        board_name = request.POST.get('name')
+        board_type = request.POST.get('type')
+        print(board_name)
+        print(board_id)
+        print(board_type)
+        return_json = {}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
+    return redirect('/')
+
+
+@csrf_exempt
+def jump_modify_board(request, board_id):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    print(board_id)
+    obj = Board.objects.get(id=int(board_id))
+    return render(request, 'superuser/modify_board.html', context={'board': obj})
+    return redirect('/')

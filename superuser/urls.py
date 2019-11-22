@@ -14,6 +14,8 @@ urlpatterns = [
     path('handle_delete', superuser_views.delete_handle),
     path('download_excel', superuser_views.excel_export, name='excel_export'),
     path('modify_handle', superuser_views.edit_handle),
+    path('jump_modify_board/<int:board_id>', superuser_views.jump_modify_board),
+    path('modify_board_board', superuser_views.modify_board_board),
     path('delete_board', superuser_views.delete_board),
     path('manual_update/<int:only_board>', auto_update.manual_update, name='manual_update')
 ]

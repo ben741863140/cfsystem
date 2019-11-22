@@ -5,6 +5,7 @@
     <script src="{% static '/superuser/board_modify.js' %}"></script>
 {% endblock %}
 {% block content %}
+    {% csrf_token %}
     <table class="table">
         <thead>
         <tr>
@@ -26,7 +27,7 @@
                 <td>{{ board.end_time }}</td>
                 <td>{{ board.creator }}</td>
                 <td>
-                    <button class="btn btn-primary" disabled="disabled">编辑</button>
+                    <button class="btn btn-primary" id="{{ board.id }}_modify">编辑</button>
                 </td>
                 <td>
                     <button class="btn btn-primary delete" id="board{{ board.id }}">删除</button>
@@ -45,4 +46,20 @@
         </td>
         </tbody>
     </table>
+    <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script>
+        {% for board in boards %}
+            $('#{{ board.id }}_modify').click(function () {
+              {#$.get({#}
+              {#    type: "GET",#}
+              {#    url: "/admin/jump_modify_board",#}
+              {#    data: {#}
+              {#        "id": {{ board.id }},#}
+              {#        csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()#}
+              {#    }#}
+              {# })#}
+                window.open('/admin/jump_modify_board/{{ board.id }}')
+            })
+        {% endfor %}
+    </script>
 {% endblock %}
