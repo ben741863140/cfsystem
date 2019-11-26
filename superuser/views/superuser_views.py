@@ -3,6 +3,9 @@ from django.shortcuts import render, redirect, render_to_response
 from django.views.decorators.csrf import csrf_exempt
 
 from logreg.models import User
+
+from board.models import CFUser
+
 import re
 import datetime
 from board.utility import get_rating
@@ -78,6 +81,10 @@ def edit_handle(request):
         print(user_id)
         # print(233)
         obj = User.objects.get(id=user_id)
+        cf_obj = CFUser.objects.filter(user=obj).first()
+        if cf_obj:
+            cf_obj.handle = hand
+            cf_obj.save()
         print(obj.realname)
         if is_super == 'true':
             obj.is_superuser = True
@@ -148,14 +155,17 @@ def create_board(request):
                 cf_user.realname = msg['realname']
                 cf_user.rating = msg['rating']
                 cf_user.save()
-                board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, old_rating=0)
+                try:
+                    BoardItem.objects.get(cf_user_id=cf_user.id, board_id=board.id)
+                except Exception:
+                    board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, old_rating=0)
                 # rating_changes = get_rating_change(msg['handle'])
                 # board_item.max_rating = _get_max_rating(rating_changes, board.start_time, board.end_time)
                 # board_item.old_rating = _get_max_rating(rating_changes, datetime.datetime.fromtimestamp(100000),
                 #                                         board.start_time)
                 # if board_item.old_rating == 0:
                 #     board_item.old_rating = 1500
-                board_item.save()
+                    board_item.save()
             return render(request, 'superuser/import_result.html', {'results': results})
     return render(request, 'superuser/create_board_form.html', {'form': form})
 
@@ -226,12 +236,71 @@ def modify_board_board(request):
         board_id = request.POST.get('id')
         board_name = request.POST.get('name')
         board_type = request.POST.get('type')
-        print(board_name)
-        print(board_id)
-        print(board_type)
+        board_start_time = request.POST.get('start_time')
+        board_end_time = request.POST.get('end_time')
+        obj = Board.objects.get(id=board_id)
+        obj.name = board_name
+        obj.type = board_type
+        obj.start_time = board_start_time
+        obj.end_time = board_end_time
+        obj.save()
         return_json = {}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
     return redirect('/')
+
+def modify_board_modify_user(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    if request.is_ajax():
+        id = request.POST.get('id')
+        handle = request.POST.get('handle')
+        realname = request.POST.get('realname')
+        try:
+            obj = CFUser.objects.get(id=id)
+            obj.handle = handle
+            obj.realname = realname
+            obj.save()
+        except Exception as e:
+            print(e)
+        if obj.user is not None:
+            if handle != obj.handle:
+                obj.user = None
+        return_json = {}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
+
+def modify_board_del_user(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    if request.is_ajax():
+        id = request.POST.get('id')
+        board_id = request.POST.get('board_id')
+        print(board_id)
+        print(id)
+        try:
+            BoardItem.objects.filter(cf_user_id=id, board_id=board_id).delete()
+        except Exception as e:
+            print(e)
+        return_json = {}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
+
+def modify_board_add_user(request):
+    if not request.user.is_authenticated or request.user.is_superuser == 0:
+        return redirect('/')
+    if request.is_ajax():
+        board_id = request.POST.get('id')
+        handle = request.POST.get('handle')
+        realname = request.POST.get('realname')
+        cf_user = CFUser.objects.get_or_create(handle=handle)[0]
+        cf_user.realname = realname
+        cf_user.save()
+        board = Board.objects.get(id=board_id)
+        try:
+            BoardItem.objects.get(cf_user_id=cf_user.id, board_id=board.id)
+        except Exception:
+            board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, old_rating=0)
+            board_item.save()
+        return_json = {}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 
 @csrf_exempt
@@ -240,5 +309,9 @@ def jump_modify_board(request, board_id):
         return redirect('/')
     print(board_id)
     obj = Board.objects.get(id=int(board_id))
-    return render(request, 'superuser/modify_board.html', context={'board': obj})
+    items = BoardItem.objects.filter(board=obj)
+    cf_objs = []
+    for item in items:
+        cf_objs.append(CFUser.objects.filter(id=item.cf_user_id).first())
+    return render(request, 'superuser/modify_board.html', context={'board': obj, 'users': cf_objs})
     return redirect('/')

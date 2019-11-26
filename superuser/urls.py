@@ -16,6 +16,9 @@ urlpatterns = [
     path('modify_handle', superuser_views.edit_handle),
     path('jump_modify_board/<int:board_id>', superuser_views.jump_modify_board),
     path('modify_board_board', superuser_views.modify_board_board),
+    path('modify_board_modify_user', superuser_views.modify_board_modify_user),
+    path('modify_board_del_user', superuser_views.modify_board_del_user),
+    path('modify_board_add_user', superuser_views.modify_board_add_user),
     path('delete_board', superuser_views.delete_board),
     path('manual_update/<int:only_board>', auto_update.manual_update, name='manual_update')
 ]

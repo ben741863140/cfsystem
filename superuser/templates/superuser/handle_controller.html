@@ -19,6 +19,7 @@
             <th scope="col">CFID</th>
             <th scope="col">昵称</th>
             <th scope="col">管理员</th>
+            <th scope="col" style="text-align: center">操作</th>
         </tr>
         </thead>
         <tbody>
@@ -79,17 +80,20 @@
                 })
             })
             $("#{{ user.id }}_delete").click(function () {
-                $.ajax({
-                    type: "POST",
-                    url: "/admin/handle_delete",
-                    data: {
-                        'id':{{ user.id }},
-                        csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
-                    },
-                    success: function (ret) {
-                        alert("删除成功！");
-                    }
-                })
+                var con = window.confirm("确认删除" + $('#{{ user.id }}_realname').val() + '的账号吗？')
+                if (con) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/admin/handle_delete",
+                        data: {
+                            'id':{{ user.id }},
+                            csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
+                        },
+                        success: function (ret) {
+                            alert("删除成功！");
+                        }
+                    })
+                }
             })
         {% endfor %}
     </script>
