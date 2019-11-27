@@ -4,8 +4,6 @@ import re
 import http.cookiejar
 import urllib.request
 import urllib.parse
-from logreg.sender import use_sender, sender
-
 
 def get_handle(handle):
     def ungzip(data):

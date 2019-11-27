@@ -18,6 +18,8 @@ def get_rating(handle):
 
 
 def get_rating_change(handle):
+    print(handle)
     url = 'http://codeforces.com/api/user.rating?handle=' + str(handle)
-    results = BeautifulSoup(requests.get(url).text, 'html.parser').text
+    temp = requests.get(url)
+    results = BeautifulSoup(temp.text, 'html.parser').text
     return eval(results)

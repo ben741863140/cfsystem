@@ -2,11 +2,12 @@ from board import utility
 from board.models import CFUser, RatingChange, User
 from .models import Board
 import datetime
+from .get_handle import get_handle
 
 
 def update_rating(handle=''):
     def update(cf_user):
-        res = utility.get_rating(cf_user.handle)
+        res = utility.get_rating(get_handle(cf_user.handle))
         if res['status'] != 'OK':
             print('<update-rating> handle', cf_user.handle, '不存在')
             return
@@ -26,7 +27,7 @@ def update_rating(handle=''):
 def update_rating_change(handle=''):
     # 更新 cf_user 的RatingChange
     def update(cf_user):
-        result = utility.get_rating_change(cf_user.handle)
+        result = utility.get_rating_change(get_handle(cf_user.handle))
         if result['status'] != 'OK':
             print(result['comment'])
             return
