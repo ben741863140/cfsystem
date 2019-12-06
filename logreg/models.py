@@ -16,3 +16,11 @@ class User(AbstractUser):
 
     # def set_password(self, raw_password):
     #     self.password = make_password(raw_password)
+
+
+class Captcha(models.Model):
+    username = models.CharField(max_length=150, blank=False)
+    handle = models.CharField(max_length=20, blank=False, unique=True)
+    update_time = models.DateTimeField()
+    captcha = models.CharField()
+    status = models.IntegerField(default=0)

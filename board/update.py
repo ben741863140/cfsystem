@@ -5,6 +5,20 @@ import datetime
 from .get_handle import get_handle
 
 
+def cf_handle_update():
+    for user in User.objects.all():
+        temp = get_handle(user.handle)
+        if user.handle != temp:
+            user.handle = temp
+            user.save()
+            try:
+                cf_user = CFUser.objects.get(user_id=user.id)
+                cf_user.handle = temp
+                cf_user.save()
+            except Exception:
+                continue
+
+
 def update_rating(handle=''):
     def update(cf_user):
         res = utility.get_rating(get_handle(cf_user.handle))
@@ -108,7 +122,11 @@ def update_board(board_id=-1):  # -1表示更新所有Board
 # 需修改数据库结构解决
 def update_user_and_cf_user():
     for user in User.objects.all():
-        cf_user = CFUser.objects.filter(handle=user.handle).first()
-        if cf_user:
+        cf_user = None
+        try:
+            cf_user = CFUser.objects.filter(handle=user.handle).first()
+        except Exception:
+            cf_user = None
+        if cf_user is not None:
             cf_user.user = user
             cf_user.save()

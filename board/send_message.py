@@ -4,7 +4,7 @@ import re
 import http.cookiejar
 import urllib.request
 import urllib.parse
-from logreg.sender import use_sender, sender
+# from logreg.sender import use_sender, sender
 
 
 def send_message(handle, content):
@@ -43,7 +43,7 @@ def send_message(handle, content):
     data = ungzip(data)
     csrf_token = get_csrf(data.decode())
     # print(data)
-    use = str(sender(use_sender()))
+    # use = str(sender(use_sender()))
     post_dict = {
         'csrf_token': csrf_token,
         'action': 'enter',
@@ -56,6 +56,8 @@ def send_message(handle, content):
     # print(use)
     # print(handle)
     # print(data)
+    if 'scau_support' not in str(data):
+        return -1
     post_data = urllib.parse.urlencode(post_dict).encode()
     opener.open(url, post_data)
     url = 'http://codeforces.com/usertalk?other=' + str(handle)
@@ -70,4 +72,6 @@ def send_message(handle, content):
     }
     post_data = urllib.parse.urlencode(post_dict).encode()
     opener.open(url, post_data)
-    # print(data)
+    if content not in str(data):
+        return 1
+    return 0

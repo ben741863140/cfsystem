@@ -1,5 +1,5 @@
 import threading, time, datetime, re
-from board.update import update_rating_change, update_rating, update_board
+from board.update import update_rating_change, update_rating, update_board, cf_handle_update
 from board import update
 from board.models import CFUser
 
@@ -65,6 +65,7 @@ class AutoUpdate(threading.Thread):
     @staticmethod
     def update(only_board=False):
         print('开始更新数据库...')
+        cf_handle_update()
         if not only_board:
             update_rating_change()
             update_rating()

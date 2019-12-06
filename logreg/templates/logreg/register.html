@@ -29,11 +29,8 @@
                             <p class="help text-small text-muted">{{ field.help_text|safe }}</p>
                         {% endif %}
                         {% if field.html_name == 'handle' %}
-                            <button type="button" class="btn btn-primary" id="yz">验证</button>
+                            <button type="button" class="btn btn-primary" id="captcha">验证</button>
                             <p><span id="okay"></span></p>
-                            <p class="form">验证码:</p>
-                            <input type="text" class="form" id="yzm" name="yzm">
-                            <span id="yztex"></span>
                         {% endif %}
                     {% endfor %}
                     <button type="submit" id="reg" class="btn btn-primary btn-block" disabled/>注册</button>
@@ -53,7 +50,7 @@
       $("#id_username").keyup(function () {
           var tex = $('#id_username').val();
           var ans = "";
-          $.get('/ajax/usercheck/',{'tex':tex},function (ret) {
+          $.get('/ajax/user_check/',{'tex':tex, csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()},function (ret) {
               for (var i=0; i< ret.length; ++i)
                   ans += ret[i];
               if (ans == 'true')
@@ -62,18 +59,21 @@
                   {$('#usertex').html("<p class=\"text-danger\">用户名不可用!</p>");}
           });
       });
-      $("#yz").click(function(){
+      $("#captcha").click(function(){
           {% for field in form %}
-          {% if field.html_name == 'handle'%}
-              var handle = $('#{{ field.auto_id }}').val();
-          {% endif %}
+              {% if field.html_name == 'handle'%}
+                  var handle = $('#{{ field.auto_id }}').val();
+              {% endif %}
+              {% if field.auto_id == "id_username" %}
+                  var user_name = $('#{{ field.auto_id }}').val();
+              {% endif %}
           {% endfor %}
           if (time == 0){
               time = 60; //秒数
               $.ajax({
                 type:"POST",
-                url:"/ajax/yz/",
-                data:{"hand":handle},
+                url:"/ajax/send_captcha/",
+                data:{"hand":handle, "user_name":user_name, csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()},
                 success: function(ret){
                     $('#okay').html(ret.result);
                     $('#reg').removeAttr('disabled');
@@ -82,9 +82,9 @@
               //启动计时器，倒计时time秒后自动关闭计时器。
             var index = setInterval(function(){
             time--;
-            $('#yz').html('验证('+time+'秒)');
+            $('#captcha').html('验证('+time+'秒)');
             if (time == 0) {
-                $('#yz').html('重新获取');
+                $('#captcha').html('重新获取');
                 clearInterval(index);
             }
             }, 1000);
@@ -112,27 +112,6 @@
               {$('#pastex').html("<p class=\"text-danger\">密码输入不一致!</p>");}
           if (com == "")
               {$('#pastex').html("");}
-      });
-      $('#yzm').focus();
-      $('#yzm').keyup(function () {
-          var tex = $('#yzm').val();
-          {% for field in form %}
-          {% if field.html_name == 'handle'%}
-              var hand = $('#{{ field.auto_id }}').val();
-          {% endif %}
-          {% endfor %}
-          var cap ="";
-          var flag = false;
-          $.get('/ajax/yzm/',{'hand':hand},function (ret) {
-              for (var i=0; i< ret.length; ++i)
-                  cap += ret[i];
-              if(cap == "") flag=false
-              else flag =true
-              if(cap == tex && flag)
-                {$('#yztex').html("<p class=\"text-primary\">验证码正确!</p>");}
-              else
-                {$('#yztex').html("<p class=\"text-danger\">验证码错误!</p>");}
-          });
       });
     });
 </script>

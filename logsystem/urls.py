@@ -14,17 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from logreg.views import index, yz, yzm,yzm2, usercheck, user_exist, password_check, yz2
+from logreg.views import index, send_captcha, yzm2, user_check, user_exist, password_check, yz2
 urlpatterns = [
     url(r'^board/', include('board.urls')),
     url(r'^logreg/', include('logreg.urls')),
     url(r'^logreg/', include('django.contrib.auth.urls')),
     url(r'^$', index, name='index'),
     url(r'^admin/', include('superuser.urls')),
-    url(r'^ajax/yz/', yz, name='yz'),
-    url(r'^ajax/yzm/', yzm, name='yzm'),
+    url(r'^ajax/send_captcha/', send_captcha, name='send_captcha'),
     url(r'^ajax/yzm2/', yzm2, name='yzm2'),
-    url(r'^ajax/usercheck', usercheck, name='usercheck'),
+    url(r'^ajax/user_check', user_check, name='user_check'),
     url(r'^ajax/user_exist', user_exist, name='user_exist'),
     url(r'^ajax/password_check', password_check, name='password_check'),
     url(r'^ajax/yz2/', yz2, name='yz2'),
