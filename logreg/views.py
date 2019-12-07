@@ -70,6 +70,7 @@ def register(request):
 def send_captcha(request):
     if request.is_ajax():
         handle = str(request.POST.get('hand'))
+        user_name = str(request.POST.get('user_name'))
         try:
             user = User.objects.get(handle=handle)
             return_json = {
@@ -83,8 +84,9 @@ def send_captcha(request):
                 captcha += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
             captcha += handle
             captcha += str(int(time.time()))
-            mes = str('Your handle is being linked to the SCAU_CFsystem. The verify link is ' + ip + '/verify/' + str(
-                captcha) + '. If the operator is not yourself, please ignore this message.')
+            mes = str('Your handle is being linked to the SCAU_CFsystem. The user name is ' + user_name +
+                    '. If you want to verify, please click the link: ' + ip + '/verify/' + str(captcha) +
+                    ' .If the operator is not yourself, please ignore this message.')
             print(mes)
             res = send_message(str(handle), mes)
             if res == -1:
@@ -94,7 +96,7 @@ def send_captcha(request):
                 return_json = {
                     'result': '发送验证码失败，请检查账号名或者查看cf是否在举办比赛'}
             else:
-                item = Captcha.objects.get_or_create(handle=handle)[0]
+                item = Captcha.objects.get_or_create(handle=handle, username=user_name)[0]
                 item.captcha = captcha
                 item.update_time = datetime.datetime.now()
                 item.save()
@@ -104,7 +106,15 @@ def send_captcha(request):
             return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 
-def receive_captcha(request):
+def receive_captcha(request, captcha='a'):
+    if request.method == 'GET':
+        try:
+            item = Captcha.objects.get(captcha=captcha)
+            item.status = 1
+            item.save()
+        except Exception:
+            return redirect('/')
+        return render(request, 'logreg/verify_success.html', context={'user': item.username})
 
 
 def user_check(request):

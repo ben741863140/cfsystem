@@ -14,7 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from logreg.views import index, send_captcha, yzm2, user_check, user_exist, password_check, yz2
+from django.urls import path
+from logreg.views import index, send_captcha, yzm2, user_check, user_exist, password_check, yz2, receive_captcha
 urlpatterns = [
     url(r'^board/', include('board.urls')),
     url(r'^logreg/', include('logreg.urls')),
@@ -27,5 +28,5 @@ urlpatterns = [
     url(r'^ajax/user_exist', user_exist, name='user_exist'),
     url(r'^ajax/password_check', password_check, name='password_check'),
     url(r'^ajax/yz2/', yz2, name='yz2'),
-
+    path('verify/<str:captcha>', receive_captcha),
 ]
