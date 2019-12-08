@@ -73,7 +73,7 @@ def send_captcha(request):
                 'result': '账号为空，请重新确认'}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         try:
-            user = User.objects.get(handle=handle)
+            User.objects.get(handle=handle)
             return_json = {
                 'result': '账号已存在，请重新验证'}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
@@ -98,7 +98,7 @@ def send_captcha(request):
                     'result': '发送验证码失败，请检查账号名或者查看cf是否在举办比赛'}
             else:
                 try:
-                    item = Captcha.objects.get_or_create(handle=handle, username=user_name)
+                    item = Captcha.objects.get(handle=handle, username=user_name)
                     item.captcha = captcha
                     item.update_time = datetime.datetime.now()
                 except Exception:
