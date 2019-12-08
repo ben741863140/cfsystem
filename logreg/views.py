@@ -97,9 +97,12 @@ def send_captcha(request):
                 return_json = {
                     'result': '发送验证码失败，请检查账号名或者查看cf是否在举办比赛'}
             else:
-                item = Captcha.objects.get_or_create(handle=handle, username=user_name)[0]
-                item.captcha = captcha
-                item.update_time = datetime.datetime.now()
+                try:
+                    item = Captcha.objects.get_or_create(handle=handle, username=user_name)
+                    item.captcha = captcha
+                    item.update_time = datetime.datetime.now()
+                except Exception:
+                    item = Captcha.objects.create(handle=handle, username=user_name, update_time=datetime.datetime.now(), captcha=captcha)
                 item.save()
                 return_json = {
                     'result': '已发送验证链接到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，'
