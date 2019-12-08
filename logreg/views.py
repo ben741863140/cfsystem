@@ -41,9 +41,6 @@ def register(request):
                 captcha = Captcha.objects.get(request.POST.get('handle'))
             except Exception:
                 return render(request, 'logreg/register.html', context={'form': form})
-            # 验证码还在有效期内
-            # permitted = datetime.datetime.now() - datetime.timedelta(minutes=30)
-            # if captcha.update_time.__le__(permitted):
             if captcha.username == str(form.cleaned_data['username']) and captcha.status == 1:
                 print('captcha pass')
                 temp = captcha.username
@@ -71,6 +68,10 @@ def send_captcha(request):
     if request.is_ajax():
         handle = str(request.POST.get('hand'))
         user_name = str(request.POST.get('user_name'))
+        if handle == '' or user_name == '':
+            return_json = {
+                'result': '账号为空，请重新确认'}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
         try:
             user = User.objects.get(handle=handle)
             return_json = {
@@ -110,8 +111,11 @@ def receive_captcha(request, captcha='a'):
     if request.method == 'GET':
         try:
             item = Captcha.objects.get(captcha=captcha)
-            item.status = 1
-            item.save()
+            # 验证码还在有效期内
+            permitted = datetime.datetime.now() - datetime.timedelta(minutes=30)
+            if item.update_time.__le__(permitted):
+                item.status = 1
+                item.save()
         except Exception:
             return redirect('/')
         return render(request, 'logreg/verify_success.html', context={'user': item.username})

@@ -56,13 +56,15 @@ def send_message(handle, content):
     # print(use)
     # print(handle)
     # print(data)
-    if 'scau_support' not in str(data):
-        return -1
+    # if 'scau_support' not in str(data):
+    #     return -1
     post_data = urllib.parse.urlencode(post_dict).encode()
     opener.open(url, post_data)
     url = 'http://codeforces.com/usertalk?other=' + str(handle)
     data = opener.open(url).read()
     data = ungzip(data)
+    if 'scau_support' not in str(data):
+        return -1
     csrf_token = get_csrf(data.decode())
     post_dict = {
         'csrf_token': csrf_token,
@@ -71,7 +73,8 @@ def send_message(handle, content):
         '_tta': '435'
     }
     post_data = urllib.parse.urlencode(post_dict).encode()
-    opener.open(url, post_data)
+    data = opener.open(url, post_data).read()
+    data = ungzip(data)
     if content not in str(data):
         return 1
     return 0
