@@ -116,9 +116,14 @@ def receive_captcha(request, captcha='a'):
             item = Captcha.objects.get(captcha=captcha)
             # 验证码还在有效期内
             permitted = datetime.datetime.now() - datetime.timedelta(minutes=30)
+            print(int(permitted))
+            print(int(item.update_time))
+            print(233)
             if item.update_time.__le__(permitted):
                 item.status = 1
                 item.save()
+            else:
+                return redirect('/')
         except Exception:
             return redirect('/')
         return render(request, 'logreg/verify_success.html', context={'user': item.username})
