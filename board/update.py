@@ -10,7 +10,8 @@ def captcha_clean():
     now = datetime.datetime.now()
     now = now.replace(minute=now.minute-30)
     for item in Captcha.objects.all():
-        if item.update_time.lt(now):
+        print(item.handle)
+        if item.update_time.__lt__(now):
             try:
                 item.delete()
             except Exception:
@@ -20,6 +21,7 @@ def captcha_clean():
 def cf_handle_update():
     for user in User.objects.all():
         temp = get_handle(user.handle)
+        print(temp + '  ' + user.handle)
         if user.handle != temp:
             user.handle = temp
             user.save()
