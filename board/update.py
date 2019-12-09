@@ -1,8 +1,20 @@
 from board import utility
 from board.models import CFUser, RatingChange, User
+from logreg.models import Captcha
 from .models import Board
 import datetime
 from .get_handle import get_handle
+
+
+def captcha_clean():
+    now = datetime.datetime.now()
+    now = now.replace(minute=now.minute-30)
+    for item in Captcha.objects.all():
+        if item.update_time.lt(now):
+            try:
+                item.delete()
+            except Exception:
+                continue
 
 
 def cf_handle_update():
