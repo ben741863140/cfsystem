@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.urls import path
-from logreg.views import index, send_captcha, yzm2, user_check, user_exist, password_check, yz2, receive_captcha
+from logreg.views import index, send_captcha, user_check, user_exist, password_check, reset_password_captcha, receive_captcha
 urlpatterns = [
     url(r'^board/', include('board.urls')),
     url(r'^logreg/', include('logreg.urls')),
@@ -23,10 +23,9 @@ urlpatterns = [
     url(r'^$', index, name='index'),
     url(r'^admin/', include('superuser.urls')),
     url(r'^ajax/send_captcha/', send_captcha, name='send_captcha'),
-    url(r'^ajax/yzm2/', yzm2, name='yzm2'),
     url(r'^ajax/user_check', user_check, name='user_check'),
     url(r'^ajax/user_exist', user_exist, name='user_exist'),
     url(r'^ajax/password_check', password_check, name='password_check'),
-    url(r'^ajax/yz2/', yz2, name='yz2'),
+    url(r'^ajax/reset_password_captcha/', reset_password_captcha),
     path('verify/<str:captcha>', receive_captcha),
 ]

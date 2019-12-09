@@ -7,7 +7,7 @@ import urllib.parse
 # from logreg.sender import use_sender, sender
 
 
-def send_message(handle, content):
+def send_message(handle, content, captcha):
     def ungzip(data):
         return gzip.decompress(data)
 
@@ -75,6 +75,7 @@ def send_message(handle, content):
     post_data = urllib.parse.urlencode(post_dict).encode()
     data = opener.open(url, post_data).read()
     data = ungzip(data)
-    if content not in str(data):
+    # print(data)
+    if captcha not in str(data):
         return 1
     return 0
