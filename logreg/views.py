@@ -115,8 +115,7 @@ def receive_captcha(request, captcha='a'):
             item = Captcha.objects.get(captcha=captcha)
             print('find the captcha')
             # 验证码还在有效期内
-            permitted = datetime.datetime.now()
-            permitted = permitted.replace(minute=permitted.minute-30)
+            permitted = datetime.datetime.now() - datetime.timedelta(minutes=30)
             if item.update_time.__ge__(permitted):
                 print('the captcha is useful')
                 item.status = 1

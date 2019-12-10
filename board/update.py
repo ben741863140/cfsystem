@@ -7,8 +7,7 @@ from .get_handle import get_handle
 
 
 def captcha_clean():
-    now = datetime.datetime.now()
-    now = now.replace(minute=now.minute-30)
+    now = datetime.datetime.now() - datetime.timedelta(minutes=30)
     for item in Captcha.objects.all():
         print(item.handle)
         if item.update_time.__lt__(now):
