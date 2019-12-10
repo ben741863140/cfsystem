@@ -75,7 +75,7 @@
                         csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
                     },
                     success: function (ret) {
-                        alert("修改成功！");
+                        alert(ret.result);
                     }
                 })
             })

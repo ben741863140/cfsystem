@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, render_to_response
 from django.views.decorators.csrf import csrf_exempt
 
 from logreg.models import User
+from board.get_handle import get_handle
 
 from board.models import CFUser
 
@@ -80,6 +81,10 @@ def edit_handle(request):
         is_super = str(request.POST.get('super'))
         print(user_id)
         # print(233)
+        hand = get_handle(hand)
+        if hand == '':
+            return_json = {'result': '修改失败，cf账号不存在'}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
         obj = User.objects.get(id=user_id)
         cf_obj = CFUser.objects.filter(user=obj).first()
         if cf_obj:
@@ -94,8 +99,12 @@ def edit_handle(request):
         obj.handle = hand
         obj.username = username
         obj.nickname = nickname
-        obj.save()
-        return_json = {}
+        try:
+            obj.save()
+        except Exception:
+            return_json = {'result': '修改失败，请检查数据合法性'}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        return_json = {'result': '修改成功'}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 

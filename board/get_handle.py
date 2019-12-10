@@ -40,7 +40,10 @@ def get_handle(handle):
     data = ungzip(data)
     # csrf_token = get_csrf(data.decode())
     # print(data)
-    temp = re.compile('%2Fprofile%2F(.*?)">',re.S)
-    x = temp.findall(data.decode())[0]
+    temp = re.compile('%2Fprofile%2F(.*?)">', re.S)
+    try:
+        x = temp.findall(data.decode())[0]
+    except IndexError:
+        return ''
     # print(str(x))
     return str(x)
