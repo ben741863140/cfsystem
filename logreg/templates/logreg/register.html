@@ -114,5 +114,11 @@
               {$('#pastex').html("");}
       });
     });
+    var grade = document.getElementById("id_grade");
+    var date = new Date().getFullYear();
+    date = date % 100;
+    for (var j = date; j < grade.length;) {
+        grade.options.remove(j);
+    }
 </script>
 {% endblock %}

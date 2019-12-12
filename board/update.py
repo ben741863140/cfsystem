@@ -27,6 +27,7 @@ def cf_handle_update():
             try:
                 cf_user = CFUser.objects.get(user_id=user.id)
                 cf_user.handle = temp
+                cf_user.grade = user.grade
                 cf_user.save()
             except Exception:
                 continue
@@ -142,4 +143,6 @@ def update_user_and_cf_user():
             cf_user = None
         if cf_user is not None:
             cf_user.user = user
+            cf_user.handle = user.handle
+            cf_user.grade = user.grade
             cf_user.save()

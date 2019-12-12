@@ -33,6 +33,7 @@ def excel_export(request):
         w.write(0, 1, u"CFID")
         w.write(0, 2, u"真名")
         w.write(0, 3, u"昵称")
+        w.write(0, 4, u"年级")
         # 写入数据
         excel_row = 1
         for obj in list_obj:
@@ -40,10 +41,12 @@ def excel_export(request):
             data_user = obj.handle
             data_realname = obj.realname
             data_nickname = obj.nickname
+            date_grade = obj.grade
             w.write(excel_row, 0, data_id)
             w.write(excel_row, 1, data_user)
             w.write(excel_row, 2, data_realname)
             w.write(excel_row, 3, data_nickname)
+            w.write(excel_row, 4, date_grade)
             excel_row += 1
         # 检测文件是够存在
         # 方框中代码是保存本地文件使用，如不需要请删除该代码
@@ -78,19 +81,27 @@ def edit_handle(request):
         username = str(request.POST.get('username'))
         nickname = str(request.POST.get('nickname'))
         user_id = request.POST.get('id')
+        grade = request.POST.get('grade')
+        # print(grade)
         is_super = str(request.POST.get('super'))
-        print(user_id)
+        # print(user_id)
         # print(233)
-        hand = get_handle(hand)
+        try:
+            obj = User.objects.get(id=user_id)
+        except Exception:
+            return_json = {'result': '修改失败，请检查数据合法性'}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        if hand != obj.handle:
+            hand = get_handle(hand)
         if hand == '':
             return_json = {'result': '修改失败，cf账号不存在'}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
-        obj = User.objects.get(id=user_id)
         cf_obj = CFUser.objects.filter(user=obj).first()
         if cf_obj:
             cf_obj.handle = hand
+            cf_obj.grade = grade
             cf_obj.save()
-        print(obj.realname)
+        # print(obj.realname)
         if is_super == 'true':
             obj.is_superuser = True
         else:
@@ -99,6 +110,7 @@ def edit_handle(request):
         obj.handle = hand
         obj.username = username
         obj.nickname = nickname
+        obj.grade = grade
         try:
             obj.save()
         except Exception:
@@ -114,7 +126,7 @@ def delete_handle(request):
     # print(233)
     if request.is_ajax():
         user_id = request.POST.get('id')
-        print(user_id)
+        # print(user_id)
         # print(233)
         User.objects.filter(id=user_id).delete()
         return_json = {}
@@ -264,16 +276,21 @@ def modify_board_modify_user(request):
         id = request.POST.get('id')
         handle = request.POST.get('handle')
         realname = request.POST.get('realname')
+        grade = request.POST.get('grade')
         try:
             obj = CFUser.objects.get(id=id)
             obj.handle = handle
             obj.realname = realname
+            obj.grade = grade
             obj.save()
         except Exception as e:
             print(e)
         if obj.user is not None:
             if handle != obj.handle:
                 obj.user = None
+            else:
+                obj.user.grade = grade
+                obj.user.save()
         return_json = {}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
@@ -299,8 +316,10 @@ def modify_board_add_user(request):
         board_id = request.POST.get('id')
         handle = request.POST.get('handle')
         realname = request.POST.get('realname')
+        grade = request.POST.get('grade')
         cf_user = CFUser.objects.get_or_create(handle=handle)[0]
         cf_user.realname = realname
+        cf_user.grade = grade
         cf_user.save()
         board = Board.objects.get(id=board_id)
         try:

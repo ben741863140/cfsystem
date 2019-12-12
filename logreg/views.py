@@ -46,15 +46,19 @@ def register(request):
                 form.save()
                 handle = form.cleaned_data['handle']
                 realname = form.cleaned_data['realname']
+                grade = form.cleaned_data['grade']
                 user = User.objects.filter(handle=handle).get()
-                CFUser.objects.update_or_create(handle=handle, defaults={
-                    'realname': realname, 'user': user})
+                try:
+                    CFUser.objects.update_or_create(handle=handle, defaults={
+                        'realname': realname, 'user': user, 'grade': grade})
+                except Exception:
+                    return render(request, 'logreg/register_fail.html')
                 # update_rating(handle)
                 # update_rating_change(handle)
                 if redirect_to:
                     return redirect(redirect_to)
                 else:
-                    return redirect('/')
+                    return render(request, 'logreg/register_success.html', context={'user_name': temp})
             else:
                 return render(request, 'logreg/register.html', context={'form': form})
     else:

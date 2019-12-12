@@ -17,6 +17,7 @@
             <th scope="col">名字</th>
             <th scope="col">ID</th>
             <th scope="col">CFID</th>
+            <th scope="col">年级</th>
             <th scope="col">昵称</th>
             <th scope="col">管理员</th>
             <th scope="col" style="text-align: center">操作</th>
@@ -32,6 +33,7 @@
                 <td><input type="text" class="form-control" value="{{ user.username }}" id="{{ user.id }}_username">
                 </td>
                 <td><input type="text" class="form-control" value="{{ user.handle }}" id="{{ user.id }}_CFID"></td>
+                <td><select id="{{ user.id }}_grade"></select></td>
                 <td><input type="text" class="form-control" value="{{ user.nickname }}" id="{{ user.id }}_nickname">
                 </td>
                 {% if user.is_superuser %}
@@ -52,16 +54,27 @@
     </table>
     <script src="http://apps.bdimg.com/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
+        var date = new Date().getFullYear();
+        date = date % 100;
+        {% for user in users %}
+            var grade = document.getElementById("{{ user.id }}_grade");
+            for(var i = 1; i <= date; i++){
+                if(i < 10)
+                    grade.options.add(new Option('0' + i.toString(), i));
+                else
+                    grade.options.add(new Option(i.toString(), i));
+            }
+            $('#{{ user.id }}_grade').val({{ user.grade }});
+        {% endfor %}
         {% for user in users %}
             $('#{{ user.id }}_super').prop("checked",);
             $("#{{ user.id }}_save").click(function () {
                 var realname = $('#{{ user.id }}_realname').val();
-                {#alert(realname);#}
                 var username = $('#{{ user.id }}_username').val();
                 var handle = $('#{{ user.id }}_CFID').val();
                 var nickname = $('#{{ user.id }}_nickname').val();
                 var superuser = $('#{{ user.id }}_super').prop("checked");
-                {#alert(superuser);#}
+                var Grade = $("#{{ user.id }}_grade").val();
                 $.ajax({
                     type: "POST",
                     url: "/admin/modify_handle",
@@ -72,6 +85,7 @@
                         "nickname": nickname,
                         'id':{{ user.id }},
                         'super':superuser,
+                        'grade':Grade,
                         csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
                     },
                     success: function (ret) {

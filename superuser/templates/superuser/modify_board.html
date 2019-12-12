@@ -49,12 +49,14 @@
         <tr>
             <th scope="col">账号</th>
             <th scope="col">姓名</th>
+            <th scope="col">年级</th>
             <th scope="col" style="text-align: center">操作</th>
         </tr>
         {% for user in users %}
             <tr>
             <td style="border: 0px;"><input class="form-control" value="{{ user.handle }}" id="{{ user.id }}_handle"></td>
             <td style="border: 0px;"><input class="form-control" value="{{ user.realname }}" id="{{ user.id }}_realname"></td>
+            <td style="border: 0px;"><select class="form-control" id="{{ user.id }}_grade"></select></td>
             <td align="center" style="border:0px;">
                     <button class="btn btn-primary" id="{{ user.id }}_save" type="button">修改</button>
                     <button class="btn btn-primary" id="{{ user.id }}_delete" type="button">删除</button>
@@ -64,6 +66,7 @@
         <tr>
             <td style="border: 0px;"><input class="form-control" required id="new_handle"></td>
             <td style="border: 0px;"><input class="form-control" required id="new_realname"></td>
+            <td style="border: 0px;"><select class="form-control" required id="new_grade"></select></td>
             <td align="center" style="border:0px;">
                     <button class="btn btn-primary" id="new_save" type="button">新增</button>
             </td>
@@ -123,6 +126,7 @@
         $('#new_save').click(function () {
             var handle = $('#new_handle').val();
             var realname = $('#new_realname').val();
+            var grade = $('#new_grade').val();
             $.ajax({
                 type:"POST",
                 url:"/admin/modify_board_add_user",
@@ -130,6 +134,7 @@
                     "id": {{ board.id }},
                     "handle": handle,
                     "realname": realname,
+                    "grade": grade,
                     csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
                 },
                 success: function (ret) {
@@ -137,10 +142,34 @@
                 }
             })
         })
+        var date = new Date().getFullYear();
+        date = date % 100;
+        {% for user in users %}
+            var grade = document.getElementById("{{ user.id }}_grade");
+            for(var i = 1; i <= date; i++){
+                if(i < 10)
+                    grade.options.add(new Option('0' + i.toString(), i));
+                else
+                    grade.options.add(new Option(i.toString(), i));
+            }
+            if({{ user.grade }} == 0)
+                $('#{{ user.id }}_grade').val(date)
+            else
+                $('#{{ user.id }}_grade').val({{ user.grade }});
+        {% endfor %}
+            var grade = document.getElementById("new_grade");
+            for(var i = 1; i <= date; i++){
+                if(i < 10)
+                    grade.options.add(new Option('0' + i.toString(), i));
+                else
+                    grade.options.add(new Option(i.toString(), i));
+            }
+            $('#new_grade').val(date);
         {% for user in users %}
             $('#{{ user.id }}_save').click(function () {
                 var handle = $('#{{ user.id }}_handle').val();
                 var realname = $('#{{ user.id }}_realname').val();
+                var grade = $('#{{ user.id }}_grade').val();
                 $.ajax({
                     type:"POST",
                     url:"/admin/modify_board_modify_user",
@@ -148,6 +177,7 @@
                         "id": {{ user.id }},
                         "handle": handle,
                         "realname": realname,
+                        "grade": grade,
                         csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
                     },
                     success: function (ret) {

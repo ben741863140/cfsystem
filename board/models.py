@@ -9,6 +9,7 @@ class CFUser(models.Model):
     rating = models.IntegerField(default=0)
     last_update = models.DateTimeField(auto_now=True)
     realname = models.CharField(max_length=5, default='')
+    grade = models.IntegerField(default=0, blank=True)
 
 
 class RatingChange(models.Model):
