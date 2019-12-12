@@ -279,7 +279,13 @@ def modify_board_modify_user(request):
         grade = request.POST.get('grade')
         try:
             obj = CFUser.objects.get(id=id)
-            obj.handle = handle
+            if obj.handle != handle:
+                handle = get_handle(handle)
+                if handle != '':
+                    obj.handle = handle
+                else:
+                    return_json = {'res': '修改失败！账号不合法'}
+                    return HttpResponse(json.dumps(return_json), content_type='application/json')
             obj.realname = realname
             obj.grade = grade
             obj.save()
@@ -291,7 +297,7 @@ def modify_board_modify_user(request):
             else:
                 obj.user.grade = grade
                 obj.user.save()
-        return_json = {}
+        return_json = {'res': '修改成功！'}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 def modify_board_del_user(request):
@@ -314,7 +320,10 @@ def modify_board_add_user(request):
         return redirect('/')
     if request.is_ajax():
         board_id = request.POST.get('id')
-        handle = request.POST.get('handle')
+        handle = get_handle(request.POST.get('handle'))
+        if handle == '':
+            return_json = {'res': '修改失败！账号不合法'}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
         realname = request.POST.get('realname')
         grade = request.POST.get('grade')
         cf_user = CFUser.objects.get_or_create(handle=handle)[0]
@@ -327,7 +336,7 @@ def modify_board_add_user(request):
         except Exception:
             board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, old_rating=0)
             board_item.save()
-        return_json = {}
+        return_json = {'res': '修改成功！'}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 

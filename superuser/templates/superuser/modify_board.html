@@ -138,7 +138,7 @@
                     csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
                 },
                 success: function (ret) {
-                    alert("新增成功！");
+                    alert(ret.res);
                 }
             })
         })
@@ -181,7 +181,7 @@
                         csrfmiddlewaretoken: $("[name='csrfmiddlewaretoken']").val()
                     },
                     success: function (ret) {
-                        alert("修改成功！");
+                        alert(ret.res);
                     }
                 })
             })
