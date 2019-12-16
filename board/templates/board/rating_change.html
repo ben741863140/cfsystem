@@ -6,7 +6,8 @@
     <script>
         var chart = Highcharts.chart('container', {
             title: {
-                text: null
+                useHTML: true,
+                text: "<a href='http://www.codeforces.com/profile/{{ name }}'>{{ name }}</a>分数曲线"
             },
             xAxis: {
                 type: 'datetime',

@@ -67,7 +67,7 @@ def board_rating_change(request, handle):
         for change in queryset:
             data.append([change.ratingUpdateTimeSeconds * 1000, change.newRating])
         data = str(data)[1:-1]
-        return render(request, 'board/rating_change.html', {'data': data})
+        return render(request, 'board/rating_change.html', {'data': data, 'name': handle})
     else:
         return render(request, 'index.html')
 
