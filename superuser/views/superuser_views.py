@@ -333,14 +333,13 @@ def modify_board_add_user(request):
         board = Board.objects.get(id=board_id)
         try:
             BoardItem.objects.get(cf_user_id=cf_user.id, board_id=board.id)
-        except Exception:
+        except BoardItem.DoesNotExist:
             board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, old_rating=0)
             board_item.save()
         return_json = {'res': '修改成功！'}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 
-@csrf_exempt
 def jump_modify_board(request, board_id):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')

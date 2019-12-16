@@ -11,7 +11,7 @@ class Pair(object):
 
 class User(AbstractUser):
     Choices = []
-    for i in range(1,99):
+    for i in range(1, 99):
         if i < 10:
             Choices.append(Pair(i, '0' + str(i)))
         else:
@@ -22,9 +22,9 @@ class User(AbstractUser):
                                 error_messages={'blank': '不能为空'})
     handle = models.CharField(max_length=20, blank=False, verbose_name='CF账号', help_text='<ul><li>必填</li></ul>',
                               error_messages={'unique': '账号已存在'}, unique=True)
-    oj_password = models.CharField(max_length=50, blank=True, default='')
     grade = models.IntegerField(verbose_name='年级', help_text='<ul><li>必填</li></ul>',
                                 error_messages={'blank': '不能为空'}, choices=grade_choices, default=16, blank=False)
+
     # Unknown what's Meta
     class Meta(AbstractUser.Meta):
         pass

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'logreg',
     'board',
     'superuser',
+    'interfaces',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,13 @@ LOGIN_REDIRECT_URL = '/'
 CRONJOBS = [
     ('* 0 * * *', 'board.auto_update.update_all'),
 ]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}

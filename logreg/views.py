@@ -104,7 +104,8 @@ def send_captcha(request):
                     item.captcha = captcha
                     item.update_time = datetime.datetime.now()
                 except Exception:
-                    item = Captcha.objects.create(handle=handle, username=user_name, update_time=datetime.datetime.now(), captcha=captcha)
+                    item = Captcha.objects.create(handle=handle, username=user_name,
+                                                  update_time=datetime.datetime.now(), captcha=captcha)
                 item.save()
                 return_json = {
                     'result': '已发送验证链接到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，'
@@ -127,7 +128,7 @@ def receive_captcha(request, captcha='a'):
             else:
                 print('the captcha is out of time')
                 return redirect('/')
-        except Exception:
+        except Captcha.DoesNotExist:
             print('can\'t find the captcha')
             return redirect('/')
         return render(request, 'logreg/verify_success.html', context={'user': item.username})
