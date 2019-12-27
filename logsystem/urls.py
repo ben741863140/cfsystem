@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^board/', include('board.urls')),
     url(r'^logreg/', include('logreg.urls')),
     url(r'^logreg/', include('django.contrib.auth.urls')),
+    url(r'^interfaces/', include('interfaces.urls')),
     url(r'^$', index, name='index'),
     url(r'^admin/', include('superuser.urls')),
     url(r'^ajax/send_captcha/', send_captcha, name='send_captcha'),

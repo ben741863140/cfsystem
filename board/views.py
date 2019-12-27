@@ -3,6 +3,16 @@ from board.models import RatingChange
 from board.models import Board, BoardItem
 
 
+# 榜单列表
+def board_list():
+    List = []
+    for item in Board.objects.all():
+        board = {'id': item.id, 'name': item.name, 'type': item.type, 'start_time': item.start_time,
+                 'end_time': item.end_time}
+        List.append(board)
+    return List
+
+
 def board_rating(request, board_id=-1):
     if not request.user.is_authenticated:
         return render(request, 'index.html')

@@ -9,7 +9,7 @@ import random
 from board.send_message import send_message
 from logreg.models import User, Captcha
 from board.models import RatingChange, CFUser
-from board.update import update_rating, update_rating_change
+from interfaces.views import active_handle
 
 ip = 'http://www.scaucf.top'
 
@@ -66,6 +66,31 @@ def register(request):
     return render(request, 'logreg/register.html', context={'form': form})
 
 
+def send_captcha_operate(username, handle):
+    random.seed()
+    captcha = ""
+    for temp in range(0, 6):
+        captcha += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
+    captcha += handle
+    captcha += str(int(time.time()))
+    mes = str('Your handle is being linked to the SCAU_CFsystem. The user name is ' + username +
+              '. If you want to verify, please click the link: \"' + ip + '/verify/' + str(captcha) +
+              '\" .If the operator is not yourself, please ignore this message. The link is available in 30 mins.')
+    res = send_message(str(handle), mes, captcha)
+    if res != 0:
+        return res
+    else:
+        try:
+            item = Captcha.objects.get(handle=handle, username=username)
+            item.captcha = captcha
+            item.update_time = datetime.datetime.now()
+        except Captcha.DoesNotExist:
+            item = Captcha.objects.create(handle=handle, username=username,
+                                          update_time=datetime.datetime.now(), captcha=captcha)
+        item.save()
+        return res
+
+
 def send_captcha(request):
     if request.is_ajax():
         handle = str(request.POST.get('hand'))
@@ -81,17 +106,7 @@ def send_captcha(request):
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         except Exception:
             # print(handle)
-            random.seed()
-            captcha = ""
-            for temp in range(0, 6):
-                captcha += random.choice('abcdefhjklmnopqrstuvwxyz0123456789')
-            captcha += handle
-            captcha += str(int(time.time()))
-            mes = str('Your handle is being linked to the SCAU_CFsystem. The user name is ' + user_name +
-                    '. If you want to verify, please click the link: \"' + ip + '/verify/' + str(captcha) +
-                    '\" .If the operator is not yourself, please ignore this message. The link is available in 30 mins.')
-            print(mes)
-            res = send_message(str(handle), mes, captcha)
+            res = send_captcha_operate(user_name, handle)
             if res == -1:
                 return_json = {
                     'result': '<font color="#FF0000">系统错误，发送验证码失败</font>'}
@@ -99,14 +114,6 @@ def send_captcha(request):
                 return_json = {
                     'result': '<font color="#FF0000">发送验证码失败，请检查账号名或者查看cf是否在举办比赛</font>'}
             else:
-                try:
-                    item = Captcha.objects.get(handle=handle, username=user_name)
-                    item.captcha = captcha
-                    item.update_time = datetime.datetime.now()
-                except Exception:
-                    item = Captcha.objects.create(handle=handle, username=user_name,
-                                                  update_time=datetime.datetime.now(), captcha=captcha)
-                item.save()
                 return_json = {
                     'result': '已发送验证链接到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，'
                               '打开对话版块查看验证信息(PS:当CF有比赛进行的时候，本系统不会发出验证码，届时请耐心等待比赛结束)'}
@@ -125,7 +132,9 @@ def receive_captcha(request, captcha='a'):
                 print('the captcha is useful')
                 item.status = 1
                 item.save()
+                active_handle(item.username, item.handle)
             else:
+                item.delete()
                 print('the captcha is out of time')
                 return redirect('/')
         except Captcha.DoesNotExist:
