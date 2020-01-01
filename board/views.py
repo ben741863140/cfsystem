@@ -13,10 +13,14 @@ def board_list():
     return List
 
 
-def board_rating(request, board_id=-1):
-    if not request.user.is_authenticated:
-        return render(request, 'index.html')
+# 查询榜是否存在
+def board_exist(_id=-1):
+    if Board.objects.filter(id=_id).exists():
+        return True
+    return False
 
+
+def board_rating_operate(board_id=-1):
     class User:
         rank = rating = handle = oldRating = newRating = change = 0
         nickname = realname = ''
@@ -26,10 +30,6 @@ def board_rating(request, board_id=-1):
         nickname = realname = ''
 
     users = []
-    if board_id == -1:
-        board_id = Board.objects.order_by('id').first().id
-    time = Board.objects.filter(id=board_id).get().name
-    creator = str(Board.objects.filter(id=board_id).get().creator)
     if str("rating") == str(Board.objects.filter(id=board_id).get().type) or str(
             Board.objects.filter(id=board_id).get().type) == 'max_three':
         for item in BoardItem.objects.filter(board=Board.objects.filter(id=board_id).get()):
@@ -45,8 +45,7 @@ def board_rating(request, board_id=-1):
         users.sort(key=lambda x: x.rating, reverse=True)
         for i in range(len(users)):
             users[i].rank = i + 1
-        return render(request, 'board/board_rating.html',
-                      {'users': users, 'time': time, 'boards': Board.objects.all(), 'creator': creator})
+        return users
     else:
         for item in BoardItem.objects.filter(board=Board.objects.filter(id=board_id).get()):
             user = User()
@@ -66,6 +65,22 @@ def board_rating(request, board_id=-1):
         for i in range(len(users)):
             users[i].rank = i + 1
             users[i].change = '+' + str(users[i].change)
+        return users
+
+
+def board_rating(request, board_id=-1):
+    if not request.user.is_authenticated:
+        return render(request, 'index.html')
+    if board_id == -1:
+        board_id = Board.objects.order_by('id').first().id
+    time = Board.objects.filter(id=board_id).get().name
+    creator = str(Board.objects.filter(id=board_id).get().creator)
+    users = board_rating_operate(board_id)
+    if str("rating") == str(Board.objects.filter(id=board_id).get().type) or str(Board.objects.filter(id=board_id)
+                                                                                 .get().type) == 'max_three':
+        return render(request, 'board/board_rating.html',
+                      {'users': users, 'time': time, 'boards': Board.objects.all(), 'creator': creator})
+    else:
         return render(request, 'board/board_upgrade.html',
                       {'users': users, 'time': time, 'boards': Board.objects.all(), 'creator': creator})
 

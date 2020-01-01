@@ -35,7 +35,7 @@ class User(AbstractUser):
 
 class Captcha(models.Model):
     username = models.CharField(max_length=150, blank=False)
-    handle = models.CharField(max_length=20, blank=False, unique=True)
+    handle = models.CharField(max_length=20, blank=False)
     update_time = models.DateTimeField()
     captcha = models.CharField(max_length=200, blank=False)
     status = models.IntegerField(default=0)

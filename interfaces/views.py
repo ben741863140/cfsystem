@@ -1,17 +1,15 @@
 # _*_ coding: utf-8 _*_
 
+import datetime
 from django.http import HttpResponse
 import json
-
 from logreg.views import send_captcha_operate
 from django.views.decorators.csrf import csrf_exempt
-
 from .models import OJUser
 from enum import IntEnum
 from .token import create_token, check_token, get_username
 from board.get_handle import get_handle
-from logreg.models import Captcha
-from board.views import board_list
+from board.views import board_list, board_exist, board_rating_operate
 
 
 class user_check_status(IntEnum):
@@ -46,7 +44,7 @@ class register_status(IntEnum):
     wrong_handle = 3
     send_fail = 4
     create_fail = 5
-    exist_handle = 7
+    exist_handle = 6
 
 
 class send_captcha_status(IntEnum):
@@ -56,6 +54,7 @@ class send_captcha_status(IntEnum):
     wrong_handle = 3
     exist_handle = 4
     send_fail = 5
+    no_user = 6
 
 
 class get_board_list_status(IntEnum):
@@ -70,6 +69,7 @@ class get_board_status(IntEnum):
     wrong_data = 1
     invalid_token = 2
     not_active = 3
+    no_board = 4
 
 
 # 用户检查（普通用户）
@@ -90,12 +90,13 @@ def user_check(token):
 def login(request):
     if request.method == 'POST':
         try:
-            username = request.POST.get('username')
-            password = request.POST.get('password')
+            recv = json.loads(request.body.decode())
+            username = recv['username']
+            password = recv['password']
             if username == '' or password == '':
                 return_json = {'status': login_status.wrong_data, 'token': ''}
                 return HttpResponse(json.dumps(return_json), content_type='application/json')
-        except ValueError:
+        except KeyError:
             return_json = {'status': login_status.wrong_data, 'token': ''}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         try:
@@ -118,15 +119,16 @@ def login(request):
 def super_register(request):
     if request.method == 'POST':
         try:
-            token = request.POST.get('token')
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            cf_handle = request.POST.get('handle')
-            is_super = request.POST.get('is_super')
+            recv = json.loads(request.body.decode())
+            token = recv['token']
+            username = recv['username']
+            password = recv['password']
+            cf_handle = recv['handle']
+            is_super = recv['is_super']
             if username == '' or password == '' or cf_handle == '':
                 return_json = {'status': super_register_status.wrong_data}
                 return HttpResponse(json.dumps(return_json), content_type='application/json')
-        except ValueError:
+        except KeyError:
             return_json = {'status': super_register_status.wrong_data}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         if not check_token(token):
@@ -140,16 +142,17 @@ def super_register(request):
         if not user.is_super:
             return_json = {'status': super_register_status.not_super}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
-        temp = OJUser.objects.filter(username=username).get()
-        if temp is not None and temp.is_active:
+        if OJUser.objects.filter(username=username).exists() and OJUser.objects.filter(
+                username=username, is_active=True).exists():
             return_json = {'status': super_register_status.exist_user}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         cf_handle = get_handle(cf_handle)
         if cf_handle == '':
             return_json = {'status': super_register_status.wrong_handle}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
-        temp = OJUser.objects.filter(cf_handle=cf_handle).get()
-        if temp is not None and temp.is_active:
+
+        if OJUser.objects.filter(cf_handle=cf_handle).exists() and OJUser.objects.filter(
+                cf_handle=cf_handle, is_active=True).exists():
             return_json = {'status': super_register_status.exist_handle}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         try:
@@ -174,30 +177,31 @@ def super_register(request):
 def register(request):
     if request.method == 'POST':
         try:
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            cf_handle = request.POST.get('cf_handle')
+            recv = json.loads(request.body.decode())
+            username = recv['username']
+            password = recv['password']
+            cf_handle = recv['handle']
             if username == '' or password == '' or cf_handle == '':
                 return_json = {'status': register_status.wrong_data}
                 return HttpResponse(json.dumps(return_json), content_type='application/json')
-        except ValueError:
+        except KeyError:
             return_json = {'status': register_status.wrong_data}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
-        temp = OJUser.objects.filter(username=username).get()
-        if temp is not None and temp.is_active:
+        if OJUser.objects.filter(username=username).exists() and OJUser.objects.filter(
+                username=username, is_active=True).exists():
             return_json = {'status': register_status.exist_user}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         cf_handle = get_handle(cf_handle)
         if cf_handle == '':
             return_json = {'status': register_status.wrong_handle}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
-        temp = OJUser.objects.filter(cf_handle=cf_handle).get()
-        if temp is not None and temp.is_active:
+        if OJUser.objects.filter(cf_handle=cf_handle).exists() and OJUser.objects.filter(
+                cf_handle=cf_handle, is_active=True).exists():
             return_json = {'status': register_status.exist_handle}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         try:
-            OJUser.objects.update_or_create(username=username, cf_handle=cf_handle,
-                                            defaults={'password': password})
+            OJUser.objects.update_or_create(username=username,
+                                            defaults={'password': password, 'cf_handle': cf_handle})
         except Exception:
             return_json = {'status': register_status.create_fail}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
@@ -216,25 +220,29 @@ def register(request):
 def send_captcha(request):
     if request.method == 'GET':
         try:
-            username = request.POST.get('username')
-            cf_handle = request.POST.get('cf_handle')
+            recv = json.loads(request.body.decode())
+            username = recv['username']
+            cf_handle = recv['handle']
             if username == '' or cf_handle == '':
                 return_json = {'status': send_captcha_status.wrong_data}
                 return HttpResponse(json.dumps(return_json), content_type='application/json')
-        except ValueError:
+        except KeyError:
             return_json = {'status': send_captcha_status.wrong_data}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
-        temp = OJUser.objects.filter(username=username, cf_handle=cf_handle).get()
-        if temp is None or temp.is_active:
+        if not OJUser.objects.filter(username=username).exists() or \
+                OJUser.objects.filter(username=username, is_active=True).exists():
             return_json = {'status': send_captcha_status.wrong_user}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         cf_handle = get_handle(cf_handle)
         if cf_handle == '':
             return_json = {'status': send_captcha_status.wrong_handle}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
-        temp = OJUser.objects.filter(cf_handle=cf_handle).get()
-        if temp is None or temp.is_active:
+        if OJUser.objects.filter(cf_handle=cf_handle).exists() and OJUser.objects.filter(cf_handle=cf_handle,
+                                                                                         is_active=True).exists():
             return_json = {'status': send_captcha_status.exist_handle}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        if not OJUser.objects.filter(cf_handle=cf_handle, username=username).exists():
+            return_json = {'status': send_captcha_status.no_user}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         res = send_captcha_operate(username, cf_handle)
         if res != 0:
@@ -246,18 +254,12 @@ def send_captcha(request):
     return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 
-# 激活账号
-def active_handle(username, cf_handle):
-    try:
-        oj_user = OJUser.objects.get(username=username, cf_handle=cf_handle)
-    except OJUser.DoesNotExist:
-        return
-    oj_user.is_active = True
-    oj_user.save()
-    OJUser.objects.exclude(id=oj_user.id).filter(cf_handle=cf_handle).delete()
-    Captcha.objects.filter(username=username).delete()
-    Captcha.objects.filter(handle=cf_handle).delete()
-
+class DataEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            return json.JSONEncoder.default(self, obj)
 
 # 查询榜单列表
 @csrf_exempt
@@ -266,8 +268,9 @@ def get_board_list(request):
     length = 0
     if request.method == 'GET':
         try:
-            token = request.GET.get('token')
-        except ValueError:
+            recv = json.loads(request.body.decode())
+            token = recv['token']
+        except KeyError:
             return_json = {'status': get_board_list_status.wrong_data, 'data': data, 'len': length}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         temp = user_check(token)
@@ -275,9 +278,9 @@ def get_board_list(request):
             return_json = {'status': temp, 'data': data, 'len': length}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         data = board_list()
-        length = length(data)
+        length = len(data)
         return_json = {'status': get_board_list_status.success, 'data': data, 'len': length}
-        return HttpResponse(json.dumps(return_json), content_type='application/json')
+        return HttpResponse(json.dumps(return_json, cls=DataEncoder), content_type='application/json')
     return_json = {'status': get_board_list_status.wrong_data, 'data': data, 'len': length}
     return HttpResponse(json.dumps(return_json), content_type='application/json')
 
@@ -288,12 +291,17 @@ def get_board(request):
     data = []
     if request.method == 'GET':
         try:
-            token = request.GET.get('token')
-            board_id = request.GET.get('id')
-        except ValueError:
+            recv = json.loads(request.body.decode())
+            token = recv['token']
+            board_id = recv['id']
+        except KeyError:
             return_json = {'status': get_board_status.wrong_data, 'data': data}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         temp = user_check(token)
         if temp != 0:
             return_json = {'status': temp, 'data': data}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
+        if not board_exist(board_id):
+            return_json = {'status': get_board_status.no_board, 'data': data}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        users = board_rating_operate(board_id)

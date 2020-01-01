@@ -1,7 +1,9 @@
 # _*_ coding: utf-8 _*_
+
 import datetime
 import time
 from django.shortcuts import render, redirect
+from interfaces.models import OJUser
 from .forms import RegisterForm
 from django.http import HttpResponse
 import json
@@ -9,7 +11,6 @@ import random
 from board.send_message import send_message
 from logreg.models import User, Captcha
 from board.models import RatingChange, CFUser
-from interfaces.views import active_handle
 
 ip = 'http://www.scaucf.top'
 
@@ -118,6 +119,19 @@ def send_captcha(request):
                     'result': '已发送验证链接到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，'
                               '打开对话版块查看验证信息(PS:当CF有比赛进行的时候，本系统不会发出验证码，届时请耐心等待比赛结束)'}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
+
+
+# 激活账号
+def active_handle(username, cf_handle):
+    try:
+        oj_user = OJUser.objects.get(username=username, cf_handle=cf_handle)
+    except OJUser.DoesNotExist:
+        return
+    oj_user.is_active = True
+    oj_user.save()
+    OJUser.objects.exclude(id=oj_user.id).filter(cf_handle=cf_handle).delete()
+    Captcha.objects.filter(username=username).delete()
+    Captcha.objects.filter(handle=cf_handle).delete()
 
 
 def receive_captcha(request, captcha='a'):
