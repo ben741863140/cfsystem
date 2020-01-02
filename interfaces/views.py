@@ -3,13 +3,17 @@
 import datetime
 from django.http import HttpResponse
 import json
+from logreg.models import User
 from logreg.views import send_captcha_operate
 from django.views.decorators.csrf import csrf_exempt
 from .models import OJUser
 from enum import IntEnum
 from .token import create_token, check_token, get_username
+from board.models import Board
 from board.get_handle import get_handle
 from board.views import board_list, board_exist, board_rating_operate
+from superuser.views.superuser_views import modify_board_add_user_operate
+from superuser.views.auto_update import manual_update_operate
 
 
 class user_check_status(IntEnum):
@@ -72,6 +76,37 @@ class get_board_status(IntEnum):
     no_board = 4
 
 
+class create_board_status(IntEnum):
+    success = 0
+    wrong_data = 1
+    invalid_token = 2
+    not_active = 3
+    not_super = 4
+    wrong_time = 5
+    wrong_type = 6
+    create_fail = 7
+
+
+class add_board_item_status(IntEnum):
+    success = 0
+    wrong_data = 1
+    invalid_token = 2
+    not_active = 3
+    not_super = 4
+    wrong_handle = 5
+    wrong_grade = 6
+    no_board = 7
+    add_fail = 8
+
+
+class update_status(IntEnum):
+    success = 0
+    wrong_data = 1
+    invalid_token = 2
+    not_active = 3
+    not_super = 4
+
+
 # 用户检查（普通用户）
 def user_check(token):
     if not check_token(token):
@@ -124,11 +159,11 @@ def super_register(request):
             username = recv['username']
             password = recv['password']
             cf_handle = recv['handle']
-            is_super = recv['is_super']
+            is_super = int(recv['is_super'])
             if username == '' or password == '' or cf_handle == '':
                 return_json = {'status': super_register_status.wrong_data}
                 return HttpResponse(json.dumps(return_json), content_type='application/json')
-        except KeyError:
+        except (KeyError, ValueError):
             return_json = {'status': super_register_status.wrong_data}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         if not check_token(token):
@@ -261,6 +296,7 @@ class DataEncoder(json.JSONEncoder):
         else:
             return json.JSONEncoder.default(self, obj)
 
+
 # 查询榜单列表
 @csrf_exempt
 def get_board_list(request):
@@ -289,19 +325,146 @@ def get_board_list(request):
 @csrf_exempt
 def get_board(request):
     data = []
+    length = 0
     if request.method == 'GET':
         try:
             recv = json.loads(request.body.decode())
             token = recv['token']
-            board_id = recv['id']
-        except KeyError:
-            return_json = {'status': get_board_status.wrong_data, 'data': data}
+            board_id = int(recv['id'])
+        except (KeyError, ValueError):
+            return_json = {'status': get_board_status.wrong_data, 'data': data, 'len': length}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         temp = user_check(token)
         if temp != 0:
-            return_json = {'status': temp, 'data': data}
+            return_json = {'status': temp, 'data': data, 'len': length}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         if not board_exist(board_id):
-            return_json = {'status': get_board_status.no_board, 'data': data}
+            return_json = {'status': get_board_status.no_board, 'data': data, 'len': length}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         users = board_rating_operate(board_id)
+        for user in users:
+            data.append(dict(user))
+            # print(dict(user))
+        length = len(data)
+        return_json = {'status': get_board_status.success, 'data': data, 'len': length}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
+    return_json = {'status': get_board_status.wrong_data, 'data': data, 'len': length}
+    return HttpResponse(json.dumps(return_json), content_type='application/json')
+
+
+# 新建榜单
+@csrf_exempt
+def create_board(request):
+    if request.method == 'GET':
+        id = -1
+        try:
+            recv = json.loads(request.body.decode())
+            token = recv['token']
+            name = recv['name']
+            type = recv['type']
+            start_time = recv['start_time']
+            end_time = recv['end_time']
+        except KeyError:
+            return_json = {'status': create_board_status.wrong_data, 'id': id}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        temp = user_check(token)
+        if temp != 0:
+            return_json = {'status': temp, 'id': id}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        user = OJUser.objects.filter(username=get_username(token)).get()
+        if not user.is_super:
+            return_json = {'status': create_board_status.not_super, 'id': id}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        try:
+            start_time = datetime.datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+            end_time = datetime.datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+            if start_time >= end_time:
+                return_json = {'status': create_board_status.wrong_time, 'id': id}
+                return HttpResponse(json.dumps(return_json), content_type='application/json')
+        except ValueError:
+            return_json = {'status': create_board_status.wrong_data, 'id': id}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        if type != 'rating' and type != 'max_three' and type != 'rating_change':
+            return_json = {'status': create_board_status.wrong_type, 'id': id}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        try:
+            board = Board(name=name, start_time=start_time, end_time=end_time, type=type,
+                          creator=User.objects.get(username='admin'))
+            board.save()
+        except Exception:
+            return_json = {'status': create_board_status.create_fail, 'id': id}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        return_json = {'status': create_board_status.success, 'id': board.id}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
+    return_json = {'status': create_board_status.wrong_data, 'id': id}
+    return HttpResponse(json.dumps(return_json), content_type='application/json')
+
+
+# 增加榜单用户
+@csrf_exempt
+def add_board_item(request):
+    if request.method == 'GET':
+        try:
+            recv = json.loads(request.body.decode())
+            token = recv['token']
+            realname = recv['realname']
+            cf_handle = recv['handle']
+            grade = int(recv['grade'])
+            board_id = int(recv['id'])
+            if realname == '' or cf_handle == '':
+                return_json = {'status': add_board_item_status.wrong_data}
+                return HttpResponse(json.dumps(return_json), content_type='application/json')
+        except (KeyError, ValueError):
+            return_json = {'status': add_board_item_status.wrong_data}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        temp = user_check(token)
+        if temp != 0:
+            return_json = {'status': temp}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        user = OJUser.objects.filter(username=get_username(token)).get()
+        if not user.is_super:
+            return_json = {'status': add_board_item_status.not_super}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        cf_handle = get_handle(cf_handle)
+        if cf_handle == '':
+            return_json = {'status': add_board_item_status.wrong_handle}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        if grade > datetime.datetime.now().year % 100 or grade < 1:
+            return_json = {'status': add_board_item_status.wrong_grade}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        if not board_exist(board_id):
+            return_json = {'status': add_board_item_status.no_board}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        if modify_board_add_user_operate(board_id, cf_handle, realname, grade):
+            return_json = {'status': add_board_item_status.success}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        else:
+            return_json = {'status': add_board_item_status.add_fail}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+    return_json = {'status': add_board_item_status.wrong_data}
+    return HttpResponse(json.dumps(return_json), content_type='application/json')
+
+
+# 更新数据库
+@csrf_exempt
+def update_api(request):
+    if request.method == 'GET':
+        try:
+            recv = json.loads(request.body.decode())
+            token = recv['token']
+        except KeyError:
+            return_json = {'status': update_status.wrong_data}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        temp = user_check(token)
+        if temp != 0:
+            return_json = {'status': temp}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        user = OJUser.objects.filter(username=get_username(token)).get()
+        if not user.is_super:
+            return_json = {'status': update_status.not_super}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        manual_update_operate(False)
+        return_json = {'status': update_status.success}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
+    return_json = {'status': update_status.wrong_data}
+    return HttpResponse(json.dumps(return_json), content_type='application/json')

@@ -21,13 +21,25 @@ def board_exist(_id=-1):
 
 
 def board_rating_operate(board_id=-1):
-    class User:
-        rank = rating = handle = oldRating = newRating = change = 0
+    class User(object):
+        rank = rating = handle = oldRating = newRating = change = grade = times = 0
         nickname = realname = ''
 
-    class User2:
-        rank = rating = handle = 0
+        def keys(self):
+            return ('rank', 'rating', 'handle', 'oldRating', 'newRating', 'change', 'nickname', 'realname')
+
+        def __getitem__(self, item):
+            return getattr(self, item)
+
+    class User2(object):
+        rank = rating = handle = grade = times = 0
         nickname = realname = ''
+
+        def keys(self):
+            return ('rank', 'rating', 'handle', 'nickname', 'realname')
+
+        def __getitem__(self, item):
+            return getattr(self, item)
 
     users = []
     if str("rating") == str(Board.objects.filter(id=board_id).get().type) or str(

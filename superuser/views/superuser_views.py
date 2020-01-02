@@ -315,6 +315,21 @@ def modify_board_del_user(request):
         return_json = {}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
 
+
+def modify_board_add_user_operate(board_id, handle, realname, grade):
+    cf_user = CFUser.objects.get_or_create(handle=handle)[0]
+    cf_user.realname = realname
+    cf_user.grade = grade
+    cf_user.save()
+    board = Board.objects.get(id=board_id)
+    try:
+        BoardItem.objects.get(cf_user_id=cf_user.id, board_id=board.id)
+    except BoardItem.DoesNotExist:
+        board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, old_rating=0)
+        board_item.save()
+    return True
+
+
 def modify_board_add_user(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
@@ -326,18 +341,9 @@ def modify_board_add_user(request):
             return HttpResponse(json.dumps(return_json), content_type='application/json')
         realname = request.POST.get('realname')
         grade = request.POST.get('grade')
-        cf_user = CFUser.objects.get_or_create(handle=handle)[0]
-        cf_user.realname = realname
-        cf_user.grade = grade
-        cf_user.save()
-        board = Board.objects.get(id=board_id)
-        try:
-            BoardItem.objects.get(cf_user_id=cf_user.id, board_id=board.id)
-        except BoardItem.DoesNotExist:
-            board_item = BoardItem(board=board, cf_user=cf_user, max_rating=0, old_rating=0)
-            board_item.save()
-        return_json = {'res': '修改成功！'}
-        return HttpResponse(json.dumps(return_json), content_type='application/json')
+        if modify_board_add_user_operate(board_id, handle, realname, grade):
+            return_json = {'res': '修改成功！'}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
 
 
 def jump_modify_board(request, board_id):

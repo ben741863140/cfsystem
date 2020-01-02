@@ -21,7 +21,7 @@ def decrypt(src):
     """解密"""
     src = signing.b64_decode(src.encode()).decode()
     raw = signing.loads(src, key=KEY, salt=SALT)
-    print(type(raw))
+    # print(type(raw))
     return raw
 
 
