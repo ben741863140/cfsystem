@@ -4,7 +4,7 @@ import re
 import http.cookiejar
 import urllib.request
 import urllib.parse
-# from logreg.sender import use_sender, sender
+from logreg.sender import use_sender, sender
 
 
 def send_message(handle, content, captcha):
@@ -43,13 +43,13 @@ def send_message(handle, content, captcha):
     data = ungzip(data)
     csrf_token = get_csrf(data.decode())
     # print(data)
-    # use = str(sender(use_sender()))
+    use = str(sender(use_sender()))
     post_dict = {
         'csrf_token': csrf_token,
         'action': 'enter',
         'ftaa': 'facg0yyl14awvys2jp',
         'bfaa': 'd3165a769f306b8a47053d749e2d920a',
-        'handleOrEmail': 'scau_support',
+        'handleOrEmail': use,
         'password': 'Aa123456',
         '_tta': '435'
     }

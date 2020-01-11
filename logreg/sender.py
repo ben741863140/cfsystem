@@ -1,5 +1,6 @@
 import re
 
+
 def use_sender():
     try:
         file = open(r'use_sender.dat', 'r')
@@ -21,6 +22,7 @@ def use_sender():
         return use
     except FileNotFoundError:
         return 0
+
 
 def sender(num):
     num = int(num) + 1
