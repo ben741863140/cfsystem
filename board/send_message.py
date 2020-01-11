@@ -8,6 +8,7 @@ from logreg.sender import use_sender, sender
 
 
 def send_message(handle, content, captcha):
+
     def ungzip(data):
         return gzip.decompress(data)
 
@@ -43,7 +44,7 @@ def send_message(handle, content, captcha):
     data = ungzip(data)
     csrf_token = get_csrf(data.decode())
     # print(data)
-    use = str(sender(use_sender()))
+    use = str(sender(use_sender())[:-1])
     post_dict = {
         'csrf_token': csrf_token,
         'action': 'enter',

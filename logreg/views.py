@@ -35,7 +35,7 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             try:
-                captcha = Captcha.objects.get(handle=request.POST.get('handle'))
+                captcha = Captcha.objects.get(handle=form.cleaned_data['handle'], username=form.cleaned_data['username'])
             except Exception:
                 return render(request, 'logreg/register.html', context={'form': form})
             if captcha.username == str(form.cleaned_data['username']) and captcha.status == 1:

@@ -269,6 +269,7 @@ def modify_board_board(request):
         return HttpResponse(json.dumps(return_json), content_type='application/json')
     return redirect('/')
 
+
 def modify_board_modify_user(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
         return redirect('/')
@@ -299,6 +300,7 @@ def modify_board_modify_user(request):
                 obj.user.save()
         return_json = {'res': '修改成功！'}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
+
 
 def modify_board_del_user(request):
     if not request.user.is_authenticated or request.user.is_superuser == 0:
