@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import login, super_register, register, get_board_list, send_captcha, get_board, create_board, \
-    add_board_item, update_api
+    add_board_item, update_api, send_codeforces_captcha
 
 app_name = 'interfaces'
 
@@ -14,4 +14,5 @@ urlpatterns = [
     path('app_create_board_API', create_board, name='create_board'),
     path('app_add_board_item_API', add_board_item, name='add_board_item'),
     path('app_update_API', update_api, name='update'),
+    path('app_send_codeforces_captcha_API', send_codeforces_captcha, name='send_codeforces_captcha'),
 ]

@@ -44,7 +44,8 @@ def send_message(handle, content, captcha):
     data = ungzip(data)
     csrf_token = get_csrf(data.decode())
     # print(data)
-    use = str(sender(use_sender())[:-1])
+    use = str(sender(use_sender())[:-1])\
+    # use = 'scau_support'
     post_dict = {
         'csrf_token': csrf_token,
         'action': 'enter',
@@ -80,3 +81,4 @@ def send_message(handle, content, captcha):
     if captcha not in str(data):
         return 1
     return 0
+

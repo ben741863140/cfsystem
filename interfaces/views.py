@@ -11,6 +11,7 @@ from enum import IntEnum
 from .token import create_token, check_token, get_username
 from board.models import Board
 from board.get_handle import get_handle
+from board.send_message import send_message
 from board.views import board_list, board_exist, board_rating_operate
 from superuser.views.superuser_views import modify_board_add_user_operate
 from superuser.views.auto_update import manual_update_operate
@@ -105,6 +106,17 @@ class update_status(IntEnum):
     invalid_token = 2
     not_active = 3
     not_super = 4
+
+
+class send_codeforces_captcha_status(IntEnum):
+    success = 0
+    wrong_data = 1
+    invalid_token = 2
+    not_active = 3
+    not_super = 4
+    wrong_handle = 5
+    system_fail = 6
+    send_fail = 7
 
 
 # 用户检查（普通用户）
@@ -467,4 +479,45 @@ def update_api(request):
         return_json = {'status': update_status.success}
         return HttpResponse(json.dumps(return_json), content_type='application/json')
     return_json = {'status': update_status.wrong_data}
+    return HttpResponse(json.dumps(return_json), content_type='application/json')
+
+
+# codeforces发送验证链接
+@csrf_exempt
+def send_codeforces_captcha(request):
+    if request.method == 'GET':
+        try:
+            recv = json.loads(request.body.decode())
+            token = recv['token']
+            cf_handle = recv['handle']
+            content = recv['content']
+            captcha = recv['captcha']
+        except KeyError:
+            return_json = {'status': send_codeforces_captcha_status.wrong_data}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        temp = user_check(token)
+        if temp != 0:
+            return_json = {'status': temp}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        user = OJUser.objects.filter(username=get_username(token)).get()
+        if not user.is_super:
+            return_json = {'status': send_codeforces_captcha_status.not_super}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        cf_handle = get_handle(cf_handle)
+        if cf_handle == '':
+            return_json = {'status': send_codeforces_captcha_status.wrong_handle}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        if captcha not in content:
+            return_json = {'status': send_codeforces_captcha_status.wrong_data}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        temp = send_message(cf_handle, content, captcha)
+        if temp == -1:
+            return_json = {'status': send_codeforces_captcha_status.system_fail}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        elif temp == 1:
+            return_json = {'status': send_codeforces_captcha_status.send_fail}
+            return HttpResponse(json.dumps(return_json), content_type='application/json')
+        return_json = {'status': send_codeforces_captcha_status.success}
+        return HttpResponse(json.dumps(return_json), content_type='application/json')
+    return_json = {'status': send_codeforces_captcha_status.wrong_data}
     return HttpResponse(json.dumps(return_json), content_type='application/json')
