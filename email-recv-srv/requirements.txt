@@ -1,0 +1,4 @@
+requests
+aiosmtpd
+flask
+lxml

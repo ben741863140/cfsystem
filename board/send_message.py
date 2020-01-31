@@ -52,7 +52,7 @@ def send_message(handle, content, captcha):
         'ftaa': 'facg0yyl14awvys2jp',
         'bfaa': 'd3165a769f306b8a47053d749e2d920a',
         'handleOrEmail': use,
-        'password': 'Aa123456',
+        'password': 'scaucf',
         '_tta': '435'
     }
     # print(use)
