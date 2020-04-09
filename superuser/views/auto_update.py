@@ -1,7 +1,8 @@
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.shortcuts import render
-from board.auto_update import UpdateSetting, AutoUpdate
+from board.auto_update import UpdateSetting
+from superuser.tasks import update_alone
 
 
 def set_auto_update(request):
@@ -29,7 +30,7 @@ def finished(request):
 
 
 def manual_update_operate(only_board):
-    AutoUpdate.update(only_board)
+    update_alone.delay(only_board)
 
 
 def manual_update(request, only_board=False):

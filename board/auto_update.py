@@ -65,9 +65,9 @@ class AutoUpdate(threading.Thread):
     @staticmethod
     def update(only_board=False):
         print('开始更新数据库...')
-        cf_handle_update()
-        captcha_clean()
         if not only_board:
+            cf_handle_update()
+            captcha_clean()
             update_rating_change()
             update_rating()
         update_board()

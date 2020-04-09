@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
+from celery.schedules import timedelta
+import djcelery
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_crontab',
+    'djcelery',
     'logreg',
     'board',
     'superuser',
@@ -82,9 +85,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # 引擎
         'NAME': 'cfsystem',  # 数据库名字
-        'USER': 'toshi',
-        'PASSWORD': 'toshi123456',
-        'HOST': '119.29.227.117',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': '121.36.65.110',
         'PORT': '3306',
     }
 }
@@ -135,9 +138,6 @@ AUTH_USER_MODEL = 'logreg.User'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
-CRONJOBS = [
-    ('* 0 * * *', 'board.auto_update.update_all'),
-]
 
 CACHES = {
     "default": {
@@ -147,4 +147,21 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
+}
+
+
+djcelery.setup_loader()
+BROKER_URL = 'redis://127.0.0.1:6379/'
+CELERY_IMPORTS = 'superuser.tasks'
+CELERY_TIMEZONE = 'Asia/Shanghai'
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+CELERYBEAT_SCHEDULE = {  # 定时器策略
+    # 定时任务一：　每隔30s运行一次
+    u'测试定时器1': {
+        "task": "superuser.tasks.auto_update",
+        # "schedule": crontab(minute='*/2'),  # or 'schedule':   timedelta(seconds=3),
+        "schedule": timedelta(days=1),
+        "args": (),
+    },
 }

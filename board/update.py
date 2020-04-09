@@ -18,6 +18,7 @@ def captcha_clean():
 
 
 def cf_handle_update():
+    print('checking username...')
     for user in User.objects.all():
         temp = get_handle(user.handle)
         print(temp + '  ' + user.handle)
