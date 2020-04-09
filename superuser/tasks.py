@@ -1,6 +1,9 @@
 from __future__ import absolute_import
 from logsystem.celery import app
 from celery import shared_task
+import django
+django.setup()
+
 from board.auto_update import AutoUpdate
 
 
