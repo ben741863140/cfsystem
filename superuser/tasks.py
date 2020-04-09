@@ -8,7 +8,7 @@ def auto_update():
     AutoUpdate.update()
 
 
-@app.tasks
+@app.task
 def update_alone(only_board):
     AutoUpdate.update(only_board)
     return
