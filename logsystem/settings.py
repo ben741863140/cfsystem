@@ -83,8 +83,8 @@ WSGI_APPLICATION = 'logsystem.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # 引擎
-        'NAME': 'cfsystem',  # 数据库名字
+        'ENGINE': 'django.db.backends.mysql',  # engine
+        'NAME': 'cfsystem',  # name of database
         'USER': 'root',
         'PASSWORD': 'root',
         'HOST': '121.36.65.110',
@@ -156,9 +156,9 @@ CELERY_IMPORTS = 'superuser.tasks'
 CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
-CELERYBEAT_SCHEDULE = {  # 定时器策略
-    # 定时任务一：　每隔30s运行一次
-    u'测试定时器1': {
+CELERYBEAT_SCHEDULE = {
+    # Schedule_task
+    u'update_database': {
         "task": "superuser.tasks.auto_update",
         # "schedule": crontab(minute='*/2'),  # or 'schedule':   timedelta(seconds=3),
         "schedule": timedelta(days=1),
