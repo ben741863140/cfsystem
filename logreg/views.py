@@ -67,7 +67,7 @@ def register(request):
     return render(request, 'logreg/register.html', context={'form': form})
 
 
-def send_captcha_operate(username, handle):
+def send_captcha_operate(username, handle, status=0):  # status:-1 接口用户申请的验证码 status:0 系统用户申请的验证码
     random.seed()
     captcha = ""
     for temp in range(0, 6):
@@ -87,7 +87,7 @@ def send_captcha_operate(username, handle):
             item.update_time = datetime.datetime.now()
         except Captcha.DoesNotExist:
             item = Captcha.objects.create(handle=handle, username=username,
-                                          update_time=datetime.datetime.now(), captcha=captcha)
+                                          update_time=datetime.datetime.now(), captcha=captcha, status=status)
         item.save()
         return res
 
@@ -146,7 +146,8 @@ def receive_captcha(request, captcha='a'):
                 print('the captcha is useful')
                 item.status = 1
                 item.save()
-                active_handle(item.username, item.handle)
+                if item.status == -1:
+                    active_handle(item.username, item.handle)
             else:
                 item.delete()
                 print('the captcha is out of time')
@@ -245,7 +246,7 @@ def reset_password_captcha(request):
                 item.update_time = datetime.datetime.now()
             except Exception:
                 item = Captcha.objects.create(handle=handle, username=user.username, update_time=datetime.datetime.now(),
-                                              captcha=captcha)
+                                              captcha=captcha, status=-1)
             item.save()
             return_json = {
                 'result': '已发送验证链接到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，'

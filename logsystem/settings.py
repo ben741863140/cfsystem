@@ -85,9 +85,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',  # engine
         'NAME': 'cfsystem',  # name of database
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': '121.36.65.110',
+        'USER': 'toshi',
+        'PASSWORD': 'toshi123456',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }

@@ -252,7 +252,7 @@ def register(request):
         except Exception:
             return_json = {'status': register_status.create_fail}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
-        res = send_captcha_operate(username, cf_handle)
+        res = send_captcha_operate(username, cf_handle, -1)
         if res != 0:
             return_json = {'status': register_status.send_fail}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
@@ -291,7 +291,7 @@ def send_captcha(request):
         if not OJUser.objects.filter(cf_handle=cf_handle, username=username).exists():
             return_json = {'status': send_captcha_status.no_user}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
-        res = send_captcha_operate(username, cf_handle)
+        res = send_captcha_operate(username, cf_handle, -1)
         if res != 0:
             return_json = {'status': send_captcha_status.send_fail}
             return HttpResponse(json.dumps(return_json), content_type='application/json')
