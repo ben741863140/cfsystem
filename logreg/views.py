@@ -183,16 +183,16 @@ def reset_password(request):
             try:
                 captcha = Captcha.objects.get(username=user.username)
             except Exception:
-                return render(request, 'registration/reset_password.html')
+                return render(request, 'registration/reset_password_failed.html')
             if captcha.status == 1:
                 user.set_password(pas)
                 user.save(update_fields=["password"])
                 Captcha.objects.filter(username=user.username).delete()
                 return render(request, 'registration/password_change_done.html')
             else:
-                return render(request, 'registration/reset_password.html')
+                return render(request, 'registration/reset_password_failed.html')
         except Exception:
-            return render(request, 'registration/reset_password.html')
+            return render(request, 'registration/reset_password_failed.html')
         if redirect_to:
             return redirect(redirect_to)
         else:
