@@ -184,16 +184,16 @@ def reset_password(request):
             try:
                 captcha = Captcha.objects.get(username=user.username)
             except Exception:
-                return render(request, 'registration/reset_password_failed.html')
+                return render(request, 'registration/password_change_failed.html')
             if captcha.status == 1:
                 user.set_password(pas)
                 user.save(update_fields=["password"])
                 Captcha.objects.filter(username=user.username).delete()
                 return render(request, 'registration/password_change_done.html')
             else:
-                return render(request, 'registration/reset_password_failed.html')
+                return render(request, 'registration/password_change_failed.html')
         except Exception:
-            return render(request, 'registration/reset_password_failed.html')
+            return render(request, 'registration/password_change_failed.html')
         if redirect_to:
             return redirect(redirect_to)
         else:
@@ -246,7 +246,7 @@ def reset_password_captcha(request):
                 item.update_time = datetime.datetime.now()
             except Exception:
                 item = Captcha.objects.create(handle=handle, username=user.username, update_time=datetime.datetime.now(),
-                                              captcha=captcha, status=-1)
+                                              captcha=captcha)
             item.save()
             return_json = {
                 'result': '已发送验证链接到您的cf账号，请<a href="http://www.codeforces.com" target="_blank">登录cf账号</a>，'
